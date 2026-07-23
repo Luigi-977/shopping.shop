@@ -14,26 +14,26 @@ Database schema is in `prisma/schema.prisma`: `User`, `Product`, `Order`, `Order
 
 ## Set up the database (do this first)
 
-1. In the Vercel dashboard: **Storage → Create Database → Postgres** (or connect a free [Neon](https://neon.tech) database — either works, both give you `DATABASE_URL`/`DIRECT_URL`).
-2. Connect it to this project. Vercel adds the env vars automatically.
+1. In the Vercel dashboard: **Storage → Create Database**, choose **Prisma Postgres** (or connect a free [Neon](https://neon.tech) database instead — either works).
+2. Connect it to this project. Vercel adds several env vars automatically (`DATABASE_URL`, `POSTGRES_URL`, `PRISMA_DATABASE_URL`, etc.) — this project only needs **`POSTGRES_URL`**, which the integration creates for you. No manual copying needed.
 3. Also add an env var **`SESSION_SECRET`** — any long random string (e.g. generate one at https://generate-secret.vercel.app/32).
 
 The build script (`prisma generate && prisma db push && next build`) creates all the tables automatically on first deploy — no manual migration step needed.
 
 ## Seed starter products
 
-After your first successful deploy, seed the catalog once from your own machine (or Vercel's dashboard isn't needed for this — any machine with Node and the `DATABASE_URL` works):
+After your first successful deploy, seed the catalog once from your own machine (or Vercel's dashboard isn't needed for this — any machine with Node and the `POSTGRES_URL` works):
 
 ```bash
 npm install
-DATABASE_URL="<paste from Vercel>" npm run seed
+POSTGRES_URL="<paste from Vercel>" npm run seed
 ```
 
 ## Run it locally
 
 ```bash
 npm install
-cp .env.example .env   # fill in DATABASE_URL, DIRECT_URL, SESSION_SECRET
+cp .env.example .env   # fill in POSTGRES_URL, SESSION_SECRET
 npx prisma db push
 npm run seed
 npm run dev
