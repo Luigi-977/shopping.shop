@@ -1,55 +1,57 @@
 # Reboot Market
 
-A storefront for graded, warrantied second-hand electronics. Built with Next.js (App Router), TypeScript, and Tailwind CSS v4.
+A storefront for graded, warrantied second-hand electronics. Next.js (App Router) + TypeScript + Tailwind CSS v4, with a Postgres database via Prisma, email/password accounts, and order history.
 
 ## What's included
 
-- **Home** (`/`) — hero, grading key, featured listings
-- **Shop** (`/shop`) — full catalog with category and grade filters
-- **Product detail** (`/product/[slug]`) — specs, condition notes, add to cart
-- **Cart** (`/cart`) — quantities, subtotal, demo checkout (persists to `localStorage`)
-- **Sell** (`/sell`) — demo listing submission form
+- **Home** (`/`), **Shop** (`/shop`) with category/grade filters, **Product detail** (`/product/[slug]`)
+- **Accounts**: `/register`, `/login`, `/account` (order history) — email + password, sessions via signed HTTP-only cookie
+- **Cart** (`/cart`) — persists to `localStorage`, checkout writes a real `Order` to the database
+- **Sell** (`/sell`) — submissions saved to a `ListingSubmission` table for review
+- **API routes** under `src/app/api/`: `auth/register`, `auth/login`, `auth/logout`, `auth/me`, `products`, `products/[slug]`, `orders`, `listings`
 
-Product data lives in `src/lib/products.ts` — edit that array to add/remove real inventory. There's no database yet; cart state is client-side only.
+Database schema is in `prisma/schema.prisma`: `User`, `Product`, `Order`, `OrderItem`, `ListingSubmission`.
+
+## Set up the database (do this first)
+
+1. In the Vercel dashboard: **Storage → Create Database → Postgres** (or connect a free [Neon](https://neon.tech) database — either works, both give you `DATABASE_URL`/`DIRECT_URL`).
+2. Connect it to this project. Vercel adds the env vars automatically.
+3. Also add an env var **`SESSION_SECRET`** — any long random string (e.g. generate one at https://generate-secret.vercel.app/32).
+
+The build script (`prisma generate && prisma db push && next build`) creates all the tables automatically on first deploy — no manual migration step needed.
+
+## Seed starter products
+
+After your first successful deploy, seed the catalog once from your own machine (or Vercel's dashboard isn't needed for this — any machine with Node and the `DATABASE_URL` works):
+
+```bash
+npm install
+DATABASE_URL="<paste from Vercel>" npm run seed
+```
 
 ## Run it locally
 
 ```bash
 npm install
+cp .env.example .env   # fill in DATABASE_URL, DIRECT_URL, SESSION_SECRET
+npx prisma db push
+npm run seed
 npm run dev
 ```
 
-Visit http://localhost:3000
-
 ## Deploy
 
-### 1. Push to GitHub
-
-```bash
-gh repo create reboot-market --public --source=. --remote=origin --push
-```
-
-Or manually:
+### Push to GitHub, then import in Vercel
 ```bash
 git remote add origin https://github.com/YOUR_USERNAME/reboot-market.git
 git branch -M main
 git push -u origin main
 ```
+Then go to **vercel.com/new**, import the repo, add the database (see above), and click Deploy.
 
-### 2. Deploy to Vercel
+## Next steps
 
-Easiest: go to https://vercel.com/new, import the GitHub repo, and click Deploy — Next.js is auto-detected, no config needed.
-
-Or via CLI:
-```bash
-npm i -g vercel
-vercel
-```
-
-## Next steps to make this a real store
-
-- **Real product data**: swap the hardcoded array in `src/lib/products.ts` for a database (Postgres via Vercel Postgres/Neon, or a headless CMS like Sanity).
-- **Real checkout**: integrate Stripe Checkout or Stripe Elements — the "Checkout" button in `/cart` is currently a no-op demo.
-- **Real product photos**: replace the emoji placeholders in `src/lib/products.ts` with actual image URLs and swap the emoji `<div>` in `ProductCard.tsx` / product page for `next/image`.
-- **Accounts**: add auth (NextAuth/Auth.js or Clerk) if you want buyer/seller accounts and order history.
-- **Sell form backend**: connect `/sell` to an API route that saves submissions to your database instead of just showing a confirmation.
+- **Payments**: `/cart` checkout currently just writes an `Order` with status `pending` — integrate Stripe Checkout to actually charge cards and flip status to `paid`.
+- **Admin**: `POST /api/products` is gated by `role === "admin"` but nothing sets that role yet — set it manually on a user row in the database, or build an admin UI.
+- **Real photos**: swap the emoji placeholders in `prisma/seed.ts` for real image URLs, and swap the emoji `<div>`s for `next/image`.
+- **Email**: `SESSION_SECRET` login works, but there's no email verification or password reset flow yet.

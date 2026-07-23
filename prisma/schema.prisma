@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         String   @default("buyer") // "buyer" | "admin"
+  orders       Order[]
+  createdAt    DateTime @default(now())
+}
+
+model Product {
+  id            String      @id @default(cuid())
+  slug          String      @unique
+  name          String
+  category      String
+  price         Int
+  originalPrice Int
+  grade         String // "A" | "B" | "C"
+  battery       Int?
+  warrantyDays  Int
+  seller        String
+  specs         String[]
+  gradeNotes    String
+  image         String
+  inStock       Boolean     @default(true)
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  user      User?       @relation(fields: [userId], references: [id])
+  userId    String?
+  email     String
+  status    String      @default("pending") // pending | paid | shipped | cancelled
+  total     Int
+  items     OrderItem[]
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id              String  @id @default(cuid())
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId         String
+  product         Product @relation(fields: [productId], references: [id])
+  productId       String
+  qty             Int
+  priceAtPurchase Int
+}
+
+model ListingSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  grade       String
+  askingPrice Int
+  email       String
+  status      String   @default("pending_review")
+  createdAt   DateTime @default(now())
+}

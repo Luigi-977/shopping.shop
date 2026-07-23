@@ -1,26 +1,41 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getProduct, products, GRADE_DESC } from "@/lib/products";
+import { prisma } from "@/lib/prisma";
+import { GRADE_DESC, Grade } from "@/lib/grading";
 import GradeBadge from "@/components/GradeBadge";
 import ProductCard from "@/components/ProductCard";
 import AddToCart from "./AddToCart";
 
-export function generateStaticParams() {
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const products = await prisma.product.findMany({ select: { slug: true } });
   return products.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const product = getProduct(params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({ where: { slug } });
   return { title: product ? `${product.name} — Reboot Market` : "Not found" };
 }
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
-  const product = getProduct(params.slug);
+export default async function ProductPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const product = await prisma.product.findUnique({ where: { slug } });
   if (!product) notFound();
 
-  const related = products
-    .filter((p) => p.category === product.category && p.slug !== product.slug)
-    .slice(0, 3);
+  const related = await prisma.product.findMany({
+    where: { category: product.category, slug: { not: product.slug }, inStock: true },
+    take: 3,
+  });
 
   const discount = Math.round(
     (1 - product.price / product.originalPrice) * 100
@@ -47,10 +62,12 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           <h1 className="text-3xl font-medium mb-4">{product.name}</h1>
 
           <div className="mb-5">
-            <GradeBadge grade={product.grade} size="lg" />
+            <GradeBadge grade={product.grade as Grade} size="lg" />
           </div>
 
-          <p className="text-wire mb-6 max-w-md">{GRADE_DESC[product.grade]}</p>
+          <p className="text-wire mb-6 max-w-md">
+            {GRADE_DESC[product.grade as Grade]}
+          </p>
 
           <div className="flex items-baseline gap-3 mb-1">
             <span className="font-display font-bold text-3xl">

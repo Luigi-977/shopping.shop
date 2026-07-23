@@ -2,11 +2,40 @@
 
 import { useState } from "react";
 import GradeBadge from "@/components/GradeBadge";
-import { Grade } from "@/lib/products";
+import { Grade } from "@/lib/grading";
 
 export default function SellPage() {
   const [submitted, setSubmitted] = useState(false);
   const [grade, setGrade] = useState<Grade>("A");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const form = new FormData(e.currentTarget);
+    const res = await fetch("/api/listings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.get("name"),
+        category: form.get("category"),
+        grade,
+        askingPrice: form.get("asking"),
+        email: form.get("email"),
+      }),
+    });
+
+    setLoading(false);
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error ?? "Something went wrong.");
+      return;
+    }
+    setSubmitted(true);
+  }
 
   if (submitted) {
     return (
@@ -14,9 +43,8 @@ export default function SellPage() {
         <p className="text-5xl mb-6">✓</p>
         <h1 className="text-2xl font-medium mb-3">Listing submitted</h1>
         <p className="text-wire">
-          This is a demo form — nothing was saved. Connect it to a database
-          and an inspection workflow when you&rsquo;re ready to accept real
-          listings.
+          Saved to our review queue. Our team will confirm the grade and get
+          back to you by email before it goes live.
         </p>
       </div>
     );
@@ -30,19 +58,14 @@ export default function SellPage() {
         before it&rsquo;s listed.
       </p>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setSubmitted(true);
-        }}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium mb-1.5" htmlFor="name">
             Device name
           </label>
           <input
             id="name"
+            name="name"
             required
             placeholder="e.g. iPhone 14 Pro, 256GB"
             className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
@@ -55,6 +78,7 @@ export default function SellPage() {
           </label>
           <select
             id="category"
+            name="category"
             className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
           >
             <option>Phones</option>
@@ -95,6 +119,7 @@ export default function SellPage() {
           </label>
           <input
             id="asking"
+            name="asking"
             type="number"
             min={0}
             required
@@ -109,6 +134,7 @@ export default function SellPage() {
           </label>
           <input
             id="email"
+            name="email"
             type="email"
             required
             placeholder="you@example.com"
@@ -116,11 +142,14 @@ export default function SellPage() {
           />
         </div>
 
+        {error && <p className="text-sm text-rust">{error}</p>}
+
         <button
           type="submit"
-          className="w-full bg-ink text-paper font-display text-sm px-5 py-3.5 rounded-md hover:bg-ink-soft transition-colors"
+          disabled={loading}
+          className="w-full bg-ink text-paper font-display text-sm px-5 py-3.5 rounded-md hover:bg-ink-soft transition-colors disabled:opacity-60"
         >
-          Submit for inspection
+          {loading ? "Submitting…" : "Submit for inspection"}
         </button>
       </form>
     </div>

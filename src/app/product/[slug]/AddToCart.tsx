@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/lib/products";
+import type { Product } from "@prisma/client";
 import { useCart } from "@/lib/cart-context";
 
 export default function AddToCart({ product }: { product: Product }) {

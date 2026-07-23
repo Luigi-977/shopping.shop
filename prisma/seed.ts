@@ -1,33 +1,8 @@
-export type Grade = "A" | "B" | "C";
+import { PrismaClient } from "@prisma/client";
 
-export type Product = {
-  slug: string;
-  name: string;
-  category: string;
-  price: number;
-  originalPrice: number;
-  grade: Grade;
-  battery?: number; // battery health %, for applicable devices
-  warrantyDays: number;
-  seller: string;
-  specs: string[];
-  gradeNotes: string;
-  image: string; // emoji placeholder used as art direction, swap for real photos later
-};
+const prisma = new PrismaClient();
 
-export const GRADE_LABEL: Record<Grade, string> = {
-  A: "Looks new",
-  B: "Light wear",
-  C: "Well used",
-};
-
-export const GRADE_DESC: Record<Grade, string> = {
-  A: "No visible scratches beyond 30cm. Screen and body like new.",
-  B: "Minor scuffs on the body, screen is clean. Works perfectly.",
-  C: "Visible wear and scratches. Fully functional, priced for it.",
-};
-
-export const products: Product[] = [
+const products = [
   {
     slug: "pixel-8-pro-graphite",
     name: "Pixel 8 Pro",
@@ -153,8 +128,22 @@ export const products: Product[] = [
   },
 ];
 
-export function getProduct(slug: string) {
-  return products.find((p) => p.slug === slug);
+async function main() {
+  for (const p of products) {
+    await prisma.product.upsert({
+      where: { slug: p.slug },
+      update: p,
+      create: p,
+    });
+  }
+  console.log(`Seeded ${products.length} products.`);
 }
 
-export const categories = Array.from(new Set(products.map((p) => p.category)));
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

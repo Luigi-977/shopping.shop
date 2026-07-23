@@ -1,10 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { products, categories, Grade } from "@/lib/products";
+import type { Product } from "@prisma/client";
+import { Grade } from "@/lib/grading";
 import ProductCard from "@/components/ProductCard";
 
-export default function ShopClient() {
+export default function ShopClient({
+  products,
+  categories,
+}: {
+  products: Product[];
+  categories: string[];
+}) {
   const [category, setCategory] = useState<string | null>(null);
   const [grade, setGrade] = useState<Grade | null>(null);
 
@@ -14,7 +21,7 @@ export default function ShopClient() {
       if (grade && p.grade !== grade) return false;
       return true;
     });
-  }, [category, grade]);
+  }, [products, category, grade]);
 
   return (
     <div className="max-w-6xl mx-auto px-5 py-10">

@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { products } from "@/lib/products";
+import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 import GradeBadge from "@/components/GradeBadge";
 
-export default function Home() {
-  const featured = products.slice(0, 4);
+export const revalidate = 60;
+
+export default async function Home() {
+  const featured = await prisma.product.findMany({
+    where: { inStock: true },
+    orderBy: { createdAt: "desc" },
+    take: 4,
+  });
 
   return (
     <>

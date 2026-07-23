@@ -3,21 +3,46 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
+import { useAuth } from "@/lib/auth-context";
 import GradeBadge from "@/components/GradeBadge";
+import { Grade } from "@/lib/grading";
 
 export default function CartPage() {
-  const { lines, remove, setQty, subtotal, clear } = useCart();
-  const [placed, setPlaced] = useState(false);
+  const { lines, remove, setQty, subtotal, checkout } = useCart();
+  const { user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  if (placed) {
+  async function handleCheckout() {
+    const checkoutEmail = user?.email ?? email;
+    if (!checkoutEmail) {
+      setError("Enter an email so we can send your order confirmation.");
+      return;
+    }
+    setError(null);
+    setLoading(true);
+    const result = await checkout(checkoutEmail);
+    setLoading(false);
+    if (!result.ok) {
+      setError(result.error);
+      return;
+    }
+    setPlacedOrderId(result.orderId);
+  }
+
+  if (placedOrderId) {
     return (
       <div className="max-w-xl mx-auto px-5 py-24 text-center">
         <p className="text-5xl mb-6">✓</p>
         <h1 className="text-2xl font-medium mb-3">Order placed</h1>
-        <p className="text-wire mb-8">
-          This is a demo checkout — no payment was taken. Wire up a real
-          payment provider (Stripe, etc.) when you&rsquo;re ready to take
-          orders for real.
+        <p className="text-wire mb-2">
+          Order #{placedOrderId.slice(-8)} was saved to the database.
+        </p>
+        <p className="text-wire mb-8 text-sm">
+          This is a demo checkout — no payment was taken yet. Wire up Stripe
+          when you&rsquo;re ready to accept real payments.
         </p>
         <Link
           href="/shop"
@@ -59,7 +84,7 @@ export default function CartPage() {
                 {product.name}
               </Link>
               <div className="mt-1">
-                <GradeBadge grade={product.grade} size="sm" />
+                <GradeBadge grade={product.grade as Grade} size="sm" />
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -93,21 +118,42 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div className="flex justify-between items-center mt-6">
-        <button onClick={clear} className="text-sm text-wire hover:text-rust">
-          Clear cart
-        </button>
+      <div className="flex justify-between items-center mt-6 mb-6">
+        <span />
         <div className="text-right">
           <p className="text-sm text-wire mb-1">Subtotal</p>
           <p className="font-display font-bold text-2xl">${subtotal}</p>
         </div>
       </div>
 
+      {!user && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-1.5" htmlFor="checkout-email">
+            Email for order confirmation
+          </label>
+          <input
+            id="checkout-email"
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
+          <p className="text-xs text-wire mt-1.5">
+            Or <Link href="/login" className="text-circuit hover:underline">log in</Link> to check out faster.
+          </p>
+        </div>
+      )}
+
+      {error && <p className="text-sm text-rust mb-4">{error}</p>}
+
       <button
-        onClick={() => setPlaced(true)}
-        className="w-full mt-8 bg-ink text-paper font-display text-sm px-5 py-4 rounded-md hover:bg-ink-soft transition-colors"
+        onClick={handleCheckout}
+        disabled={loading}
+        className="w-full bg-ink text-paper font-display text-sm px-5 py-4 rounded-md hover:bg-ink-soft transition-colors disabled:opacity-60"
       >
-        Checkout — ${subtotal}
+        {loading ? "Placing order…" : `Checkout — $${subtotal}`}
       </button>
     </div>
   );

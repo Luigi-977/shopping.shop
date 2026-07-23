@@ -1,9 +1,13 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { Product } from "./products";
+import type { Product } from "@prisma/client";
 
 type CartLine = { product: Product; qty: number };
+
+type CheckoutResult =
+  | { ok: true; orderId: string }
+  | { ok: false; error: string };
 
 type CartContextType = {
   lines: CartLine[];
@@ -13,6 +17,7 @@ type CartContextType = {
   clear: () => void;
   count: number;
   subtotal: number;
+  checkout: (email: string) => Promise<CheckoutResult>;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -64,12 +69,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines([]);
   }
 
+  async function checkout(email: string): Promise<CheckoutResult> {
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          lines: lines.map((l) => ({ slug: l.product.slug, qty: l.qty })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return { ok: false, error: data.error ?? "Checkout failed." };
+      clear();
+      return { ok: true, orderId: data.order.id };
+    } catch {
+      return { ok: false, error: "Network error — please try again." };
+    }
+  }
+
   const count = lines.reduce((sum, l) => sum + l.qty, 0);
   const subtotal = lines.reduce((sum, l) => sum + l.qty * l.product.price, 0);
 
   return (
     <CartContext.Provider
-      value={{ lines, add, remove, setQty, clear, count, subtotal }}
+      value={{ lines, add, remove, setQty, clear, count, subtotal, checkout }}
     >
       {children}
     </CartContext.Provider>

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Product } from "@/lib/products";
+import type { Product } from "@prisma/client";
+import { Grade } from "@/lib/grading";
 import GradeBadge from "./GradeBadge";
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -15,7 +16,7 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="aspect-square flex items-center justify-center text-6xl bg-ink/[0.03] relative">
         {product.image}
         <div className="absolute top-3 left-3">
-          <GradeBadge grade={product.grade} size="sm" />
+          <GradeBadge grade={product.grade as Grade} size="sm" />
         </div>
       </div>
       <div className="p-4">

@@ -1,4 +1,4 @@
-import { Grade, GRADE_LABEL } from "@/lib/products";
+import { Grade, GRADE_LABEL } from "@/lib/grading";
 
 const GRADE_COLOR: Record<Grade, string> = {
   A: "text-circuit",
