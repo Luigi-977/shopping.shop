@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #14181c;
+  --ink-soft: #1f262c;
+  --paper: #edeae2;
+  --paper-dim: #e2ddd0;
+  --signal: #ffb000;
+  --circuit: #3c7a5f;
+  --circuit-soft: #d9e6df;
+  --wire: #6b7280;
+  --rust: #c6543a;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-dim: var(--paper-dim);
+  --color-signal: var(--signal);
+  --color-circuit: var(--circuit);
+  --color-circuit-soft: var(--circuit-soft);
+  --color-wire: var(--wire);
+  --color-rust: var(--rust);
+  --font-display: var(--font-jetbrains-mono);
+  --font-body: var(--font-inter);
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--signal);
+  color: var(--ink);
+}
+
+/* Grade badge -- the site's signature element: a hardware-spec-tag styled
+   condition marker used consistently in hero, cards, and product detail. */
+.grade-tag {
+  font-family: var(--font-display), monospace;
+  letter-spacing: 0.02em;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  position: relative;
+}
+
+.grade-tag::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: -1px;
+  height: 1px;
+  background: repeating-linear-gradient(
+    to right,
+    currentColor 0,
+    currentColor 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  opacity: 0.5;
+}
+
+.font-display {
+  font-family: var(--font-display), monospace;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
