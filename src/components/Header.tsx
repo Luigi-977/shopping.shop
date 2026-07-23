@@ -30,6 +30,11 @@ export default function Header() {
           {!loading && (
             user ? (
               <div className="hidden sm:flex items-center gap-3 text-sm">
+                {user.role === "admin" && (
+                  <Link href="/admin" className="hover:text-circuit transition-colors">
+                    Till
+                  </Link>
+                )}
                 <Link href="/account" className="hover:text-circuit transition-colors">
                   {user.name || user.email.split("@")[0]}
                 </Link>
