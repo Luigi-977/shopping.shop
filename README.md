@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reboot Market
 
-## Getting Started
+A storefront for graded, warrantied second-hand electronics. Built with Next.js (App Router), TypeScript, and Tailwind CSS v4.
 
-First, run the development server:
+## What's included
+
+- **Home** (`/`) — hero, grading key, featured listings
+- **Shop** (`/shop`) — full catalog with category and grade filters
+- **Product detail** (`/product/[slug]`) — specs, condition notes, add to cart
+- **Cart** (`/cart`) — quantities, subtotal, demo checkout (persists to `localStorage`)
+- **Sell** (`/sell`) — demo listing submission form
+
+Product data lives in `src/lib/products.ts` — edit that array to add/remove real inventory. There's no database yet; cart state is client-side only.
+
+## Run it locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Visit http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Push to GitHub
 
-## Learn More
+```bash
+gh repo create reboot-market --public --source=. --remote=origin --push
+```
 
-To learn more about Next.js, take a look at the following resources:
+Or manually:
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/reboot-market.git
+git branch -M main
+git push -u origin main
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 2. Deploy to Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Easiest: go to https://vercel.com/new, import the GitHub repo, and click Deploy — Next.js is auto-detected, no config needed.
 
-## Deploy on Vercel
+Or via CLI:
+```bash
+npm i -g vercel
+vercel
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Next steps to make this a real store
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Real product data**: swap the hardcoded array in `src/lib/products.ts` for a database (Postgres via Vercel Postgres/Neon, or a headless CMS like Sanity).
+- **Real checkout**: integrate Stripe Checkout or Stripe Elements — the "Checkout" button in `/cart` is currently a no-op demo.
+- **Real product photos**: replace the emoji placeholders in `src/lib/products.ts` with actual image URLs and swap the emoji `<div>` in `ProductCard.tsx` / product page for `next/image`.
+- **Accounts**: add auth (NextAuth/Auth.js or Clerk) if you want buyer/seller accounts and order history.
+- **Sell form backend**: connect `/sell` to an API route that saves submissions to your database instead of just showing a confirmation.
