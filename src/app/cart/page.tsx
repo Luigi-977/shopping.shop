@@ -11,7 +11,7 @@ import { Grade } from "@/lib/grading";
 export default function CartPage() {
   const { lines, remove, setQty, subtotal, checkout } = useCart();
   const { user } = useAuth();
-  const { format } = useCurrency();
+  const { format, currency } = useCurrency();
   const [email, setEmail] = useState("");
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -25,12 +25,19 @@ export default function CartPage() {
     }
     setError(null);
     setLoading(true);
-    const result = await checkout(checkoutEmail);
-    setLoading(false);
+    const result = await checkout(checkoutEmail, currency);
     if (!result.ok) {
+      setLoading(false);
       setError(result.error);
       return;
     }
+    if (result.mode === "live") {
+      // Redirect to Flutterwave's hosted card/M-Pesa checkout.
+      window.location.href = result.link;
+      return;
+    }
+    // Demo mode: order completed instantly.
+    setLoading(false);
     setPlacedOrderId(result.orderId);
   }
 
@@ -43,8 +50,9 @@ export default function CartPage() {
           Order #{placedOrderId.slice(-8)} was saved to the database.
         </p>
         <p className="text-wire mb-8 text-sm">
-          This is a demo checkout — no payment was taken yet. Wire up Stripe
-          when you&rsquo;re ready to accept real payments.
+          This is a demo checkout — no real payment was taken. Once your
+          Flutterwave keys are added, this same button will charge cards and
+          M-Pesa for real.
         </p>
         <Link
           href="/shop"
@@ -155,7 +163,7 @@ export default function CartPage() {
         disabled={loading}
         className="w-full bg-ink text-paper font-display text-sm px-5 py-4 rounded-md hover:bg-ink-soft transition-colors disabled:opacity-60"
       >
-        {loading ? "Placing order…" : `Checkout — ${format(subtotal)}`}
+        {loading ? "Starting payment…" : `Pay ${format(subtotal)}`}
       </button>
     </div>
   );

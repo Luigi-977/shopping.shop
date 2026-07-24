@@ -6,7 +6,8 @@ import type { Product } from "@prisma/client";
 type CartLine = { product: Product; qty: number };
 
 type CheckoutResult =
-  | { ok: true; orderId: string }
+  | { ok: true; mode: "demo"; orderId: string }
+  | { ok: true; mode: "live"; link: string; orderId: string }
   | { ok: false; error: string };
 
 type CartContextType = {
@@ -17,7 +18,7 @@ type CartContextType = {
   clear: () => void;
   count: number;
   subtotal: number;
-  checkout: (email: string) => Promise<CheckoutResult>;
+  checkout: (email: string, currency: string) => Promise<CheckoutResult>;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -69,20 +70,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines([]);
   }
 
-  async function checkout(email: string): Promise<CheckoutResult> {
+  async function checkout(
+    email: string,
+    currency: string
+  ): Promise<CheckoutResult> {
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch("/api/payment/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
+          currency,
           lines: lines.map((l) => ({ slug: l.product.slug, qty: l.qty })),
         }),
       });
       const data = await res.json();
       if (!res.ok) return { ok: false, error: data.error ?? "Checkout failed." };
+
+      if (data.mode === "live" && data.link) {
+        // Hand off to Flutterwave's hosted checkout.
+        return { ok: true, mode: "live", link: data.link, orderId: data.orderId };
+      }
+
+      // Demo mode: order already marked paid server-side.
       clear();
-      return { ok: true, orderId: data.order.id };
+      return { ok: true, mode: "demo", orderId: data.orderId };
     } catch {
       return { ok: false, error: "Network error — please try again." };
     }
