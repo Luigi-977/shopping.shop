@@ -17,8 +17,17 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/product/${product.slug}`}
       className="group block bg-paper-dim/60 border border-ink/10 rounded-lg overflow-hidden hover:border-ink/30 transition-colors"
     >
-      <div className="aspect-square flex items-center justify-center text-6xl bg-ink/[0.03] relative">
-        {product.image}
+      <div className="aspect-square flex items-center justify-center text-6xl bg-ink/[0.03] relative overflow-hidden">
+        {product.imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          product.image
+        )}
         <div className="absolute top-3 left-3">
           <GradeBadge grade={product.grade as Grade} size="sm" />
         </div>
