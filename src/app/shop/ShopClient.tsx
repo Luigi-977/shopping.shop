@@ -21,6 +21,7 @@ export default function ShopClient({
   const [condition, setCondition] = useState<string | null>(null);
   const [grade, setGrade] = useState<Grade | null>(null);
   const [sort, setSort] = useState<SortMode>("best-grade");
+  const [query, setQuery] = useState("");
 
   const conditions = useMemo(
     () =>
@@ -39,11 +40,16 @@ export default function ShopClient({
   }, [products, category]);
 
   const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
     const list = products.filter((p) => {
       if (category && p.category !== category) return false;
       if (brand && p.brand !== brand) return false;
       if (condition && p.condition !== condition) return false;
       if (grade && p.grade !== grade) return false;
+      if (q) {
+        const haystack = `${p.name} ${p.category} ${p.brand ?? ""} ${p.specs.join(" ")}`.toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
       return true;
     });
 
@@ -64,7 +70,7 @@ export default function ShopClient({
     });
 
     return list;
-  }, [products, category, brand, condition, grade, sort]);
+  }, [products, category, brand, condition, grade, sort, query]);
 
   function pickCategory(c: string | null) {
     setCategory(c);
@@ -74,7 +80,15 @@ export default function ShopClient({
   return (
     <div className="max-w-6xl mx-auto px-5 py-10">
       <h1 className="text-2xl font-medium mb-1">Shop</h1>
-      <p className="text-wire mb-6">{filtered.length} devices in stock</p>
+      <p className="text-wire mb-4">{filtered.length} devices in stock</p>
+
+      <input
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search phones, laptops, brands…"
+        className="w-full border border-ink/20 rounded-md px-4 py-3 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit mb-6"
+      />
 
       {/* Category row */}
       <div className="flex flex-wrap gap-2 mb-3">
