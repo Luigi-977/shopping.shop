@@ -32,6 +32,7 @@ type ProductForm = {
   refurbDetails: string;
   gradeNotes: string;
   imageUrl: string | null;
+  imageUrls: string[];
   image: string;
   inStock: boolean;
 };
@@ -40,17 +41,23 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string | null>(product.imageUrl);
+  const [imageUrls, setImageUrls] = useState<string[]>(
+    product.imageUrls && product.imageUrls.length > 0
+      ? product.imageUrls
+      : product.imageUrl
+        ? [product.imageUrl]
+        : []
+  );
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
     setError(null);
     setUploading(true);
     const form = new FormData();
-    form.append("file", file);
+    Array.from(files).forEach((f) => form.append("file", f));
     const res = await fetch("/api/upload", { method: "POST", body: form });
     const data = await res.json();
     setUploading(false);
@@ -58,7 +65,11 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
       setError(data.error ?? "Upload failed.");
       return;
     }
-    setImageUrl(data.url);
+    setImageUrls((prev) => [...prev, ...(data.urls ?? [])]);
+  }
+
+  function removePhoto(url: string) {
+    setImageUrls((prev) => prev.filter((u) => u !== url));
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -84,7 +95,7 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         description: form.get("description"),
         refurbDetails: form.get("refurbDetails"),
         gradeNotes: form.get("gradeNotes"),
-        imageUrl,
+        imageUrls,
       }),
     });
     const data = await res.json();
@@ -107,22 +118,36 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <span className="block text-sm font-medium mb-2">Photo</span>
-          <div className="flex items-center gap-4">
-            <div className="w-24 h-24 rounded-lg bg-ink/[0.05] flex items-center justify-center overflow-hidden shrink-0 text-3xl">
-              {imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={imageUrl} alt="preview" className="w-full h-full object-cover" />
-              ) : (
-                product.image
-              )}
-            </div>
-            <label className="text-sm border border-ink rounded-md px-4 py-2 cursor-pointer hover:bg-ink hover:text-paper transition-colors">
-              {uploading ? "Uploading…" : imageUrl ? "Change photo" : "Add photo"}
+          <span className="block text-sm font-medium mb-2">
+            Photos <span className="text-wire font-normal">(buyers swipe through these)</span>
+          </span>
+          <div className="flex flex-wrap items-center gap-3">
+            {imageUrls.map((url) => (
+              <div key={url} className="relative w-20 h-20 rounded-lg overflow-hidden bg-ink/[0.05]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={url} alt="preview" className="w-full h-full object-cover" />
+                <button
+                  type="button"
+                  onClick={() => removePhoto(url)}
+                  className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-ink text-paper text-xs flex items-center justify-center"
+                  aria-label="Remove photo"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+            {imageUrls.length === 0 && (
+              <div className="w-20 h-20 rounded-lg bg-ink/[0.05] flex items-center justify-center text-3xl">
+                {product.image}
+              </div>
+            )}
+            <label className="w-20 h-20 rounded-lg border-2 border-dashed border-ink/25 flex items-center justify-center cursor-pointer hover:border-ink/50 transition-colors text-2xl">
+              {uploading ? "…" : "+"}
               <input
                 type="file"
                 accept="image/*"
                 capture="environment"
+                multiple
                 onChange={handlePhoto}
                 className="hidden"
               />

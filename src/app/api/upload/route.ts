@@ -16,22 +16,26 @@ export async function POST(req: NextRequest) {
   }
 
   const form = await req.formData();
-  const file = form.get("file") as File | null;
-  if (!file) {
+  // Accept one or many files under the "file" field.
+  const files = form.getAll("file").filter((f): f is File => f instanceof File);
+  if (files.length === 0) {
     return NextResponse.json({ error: "No file provided." }, { status: 400 });
   }
 
-  // Basic guardrails: images only, under 8MB.
-  if (!file.type.startsWith("image/")) {
-    return NextResponse.json({ error: "Please upload an image." }, { status: 400 });
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    return NextResponse.json({ error: "Image must be under 8MB." }, { status: 400 });
+  const urls: string[] = [];
+  for (const file of files) {
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json({ error: "Please upload images only." }, { status: 400 });
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      return NextResponse.json({ error: "Each image must be under 8MB." }, { status: 400 });
+    }
+    const blob = await put(`products/${Date.now()}-${file.name}`, file, {
+      access: "public",
+    });
+    urls.push(blob.url);
   }
 
-  const blob = await put(`products/${Date.now()}-${file.name}`, file, {
-    access: "public",
-  });
-
-  return NextResponse.json({ url: blob.url });
+  // Return both a single url (first) and the full list for multi-photo use.
+  return NextResponse.json({ url: urls[0], urls });
 }

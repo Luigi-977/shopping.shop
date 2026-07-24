@@ -37,6 +37,7 @@ export default async function EditProductPage({
         refurbDetails: product.refurbDetails ?? "",
         gradeNotes: product.gradeNotes,
         imageUrl: product.imageUrl,
+        imageUrls: product.imageUrls ?? [],
         image: product.image,
         inStock: product.inStock,
       }}

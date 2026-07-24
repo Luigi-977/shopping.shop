@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import AddToCart from "./AddToCart";
 import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
+import ImageCarousel from "@/components/ImageCarousel";
 
 export const revalidate = 60;
 
@@ -49,18 +50,16 @@ export default async function ProductPage({
       </nav>
 
       <div className="grid md:grid-cols-2 gap-12">
-        <div className="aspect-square bg-ink/[0.03] rounded-lg flex items-center justify-center text-[8rem] overflow-hidden">
-          {product.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            product.image
-          )}
-        </div>
+        <ImageCarousel
+          images={[
+            ...(product.imageUrls ?? []),
+            ...(product.imageUrl && !(product.imageUrls ?? []).includes(product.imageUrl)
+              ? [product.imageUrl]
+              : []),
+          ]}
+          fallbackEmoji={product.image}
+          alt={product.name}
+        />
 
         <div>
           <div className="flex items-center gap-2 mb-2">

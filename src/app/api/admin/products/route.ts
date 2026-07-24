@@ -65,7 +65,8 @@ export async function POST(req: NextRequest) {
       refurbDetails: b.refurbDetails || null,
       gradeNotes: b.gradeNotes || "",
       image: emojiByCategory[b.category] || "📦",
-      imageUrl: b.imageUrl || null,
+      imageUrl: b.imageUrl || (Array.isArray(b.imageUrls) ? b.imageUrls[0] : null) || null,
+      imageUrls: Array.isArray(b.imageUrls) ? b.imageUrls : [],
     },
   });
 

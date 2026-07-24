@@ -32,6 +32,7 @@ export async function PATCH(
   if (b.refurbDetails !== undefined) data.refurbDetails = b.refurbDetails || null;
   if (b.gradeNotes !== undefined) data.gradeNotes = b.gradeNotes;
   if (b.imageUrl !== undefined) data.imageUrl = b.imageUrl || null;
+  if (b.imageUrls !== undefined) data.imageUrls = Array.isArray(b.imageUrls) ? b.imageUrls : [];
   if (b.inStock !== undefined) data.inStock = Boolean(b.inStock);
   if (b.specs !== undefined) {
     data.specs = Array.isArray(b.specs)

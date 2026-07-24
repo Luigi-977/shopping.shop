@@ -37,6 +37,7 @@ model Product {
   gradeNotes    String
   image         String
   imageUrl      String?
+  imageUrls     String[]
   inStock       Boolean     @default(true)
   orderItems    OrderItem[]
   createdAt     DateTime    @default(now())
