@@ -31,12 +31,26 @@ export default async function AdminPage() {
       <h1 className="text-2xl font-medium mb-1">Till</h1>
       <p className="text-wire mb-8">Every order, as it comes in.</p>
 
-      <a
-        href="/admin/products/new"
-        className="inline-block mb-8 bg-ink text-paper font-display text-sm px-4 py-2.5 rounded-md hover:bg-ink-soft transition-colors"
-      >
-        + Add a product
-      </a>
+      <div className="flex flex-wrap gap-2 mb-8">
+        <a
+          href="/admin/products"
+          className="bg-ink text-paper font-display text-sm px-4 py-2.5 rounded-md hover:bg-ink-soft transition-colors"
+        >
+          Manage products
+        </a>
+        <a
+          href="/admin/products/new"
+          className="border border-ink font-display text-sm px-4 py-2.5 rounded-md hover:bg-ink hover:text-paper transition-colors"
+        >
+          + Add a product
+        </a>
+        <a
+          href="/admin/users"
+          className="border border-ink font-display text-sm px-4 py-2.5 rounded-md hover:bg-ink hover:text-paper transition-colors"
+        >
+          Customers
+        </a>
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
         <div className="border border-ink/10 rounded-lg p-4">
