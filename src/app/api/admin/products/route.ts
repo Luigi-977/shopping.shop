@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       name: b.name,
       category: b.category,
       brand: b.brand || null,
+      condition: b.condition || "Refurbished",
       price: Number(b.price),
       originalPrice: Number(b.originalPrice),
       grade: b.grade,
@@ -59,6 +60,9 @@ export async function POST(req: NextRequest) {
             .split(",")
             .map((s: string) => s.trim())
             .filter(Boolean),
+      description: b.description || null,
+      dimensions: b.dimensions || null,
+      refurbDetails: b.refurbDetails || null,
       gradeNotes: b.gradeNotes || "",
       image: emojiByCategory[b.category] || "📦",
       imageUrl: b.imageUrl || null,

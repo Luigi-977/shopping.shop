@@ -51,12 +51,16 @@ export default function NewProductPage() {
         name: form.get("name"),
         category: form.get("category"),
         brand: form.get("brand"),
+        condition: form.get("condition"),
         price: form.get("price"),
         originalPrice: form.get("originalPrice"),
         grade: form.get("grade"),
         battery: form.get("battery"),
         warrantyDays: form.get("warrantyDays"),
         specs: form.get("specs"),
+        dimensions: form.get("dimensions"),
+        description: form.get("description"),
+        refurbDetails: form.get("refurbDetails"),
         gradeNotes: form.get("gradeNotes"),
         imageUrl,
       }),
@@ -132,6 +136,15 @@ export default function NewProductPage() {
           </div>
         </div>
 
+        <div>
+          <span className="block text-sm font-medium mb-2">Condition</span>
+          <select name="condition" className={inputClass} defaultValue="Refurbished">
+            <option value="New">New</option>
+            <option value="Refurbished">Refurbished</option>
+            <option value="Used">Used</option>
+          </select>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1.5" htmlFor="price">
@@ -176,6 +189,27 @@ export default function NewProductPage() {
             Specs <span className="text-wire font-normal">(comma-separated)</span>
           </label>
           <input id="specs" name="specs" placeholder="128GB, Blue, Unlocked" className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="dimensions">
+            Size / dimensions <span className="text-wire font-normal">(optional)</span>
+          </label>
+          <input id="dimensions" name="dimensions" placeholder='e.g. 6.1" screen, 146 x 71 x 7.8 mm' className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="description">
+            Full description
+          </label>
+          <textarea id="description" name="description" rows={3} placeholder="Tell buyers about the product — features, what's included, why it's a good buy." className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="refurbDetails">
+            Refurbishment details <span className="text-wire font-normal">(what was done)</span>
+          </label>
+          <textarea id="refurbDetails" name="refurbDetails" rows={2} placeholder="e.g. New battery fitted, screen replaced, factory reset, 40-point tested." className={inputClass} />
         </div>
 
         <div>

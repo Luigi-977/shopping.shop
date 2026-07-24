@@ -33,9 +33,14 @@ export default function ProductCard({ product }: { product: Product }) {
         </div>
       </div>
       <div className="p-4">
-        <p className="text-xs font-display uppercase tracking-wide text-wire mb-1">
-          {product.category}
-        </p>
+        <div className="flex items-center gap-2 mb-1">
+          <p className="text-xs font-display uppercase tracking-wide text-wire">
+            {product.category}
+          </p>
+          <span className="text-[10px] font-display uppercase tracking-wide text-circuit border border-circuit/30 rounded px-1.5 py-0.5">
+            {product.condition}
+          </span>
+        </div>
         <h3 className="font-medium text-ink leading-snug mb-2 group-hover:underline decoration-signal decoration-2 underline-offset-2">
           {product.name}
         </h3>

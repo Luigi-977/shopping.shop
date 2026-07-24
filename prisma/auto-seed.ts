@@ -13,10 +13,12 @@ async function main() {
     await prisma.product.upsert({
       where: { slug: p.slug },
       update: {
-        // Only refresh catalog-managed fields; never clobber an uploaded photo.
+        // Only refresh catalog-managed fields; never clobber an uploaded photo,
+        // description, dimensions or refurb details edited in the admin.
         name: p.name,
         category: p.category,
         brand: p.brand,
+        condition: p.condition,
         price: p.price,
         originalPrice: p.originalPrice,
         grade: p.grade,

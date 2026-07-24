@@ -18,8 +18,15 @@ export default function ShopClient({
 }) {
   const [category, setCategory] = useState<string | null>(null);
   const [brand, setBrand] = useState<string | null>(null);
+  const [condition, setCondition] = useState<string | null>(null);
   const [grade, setGrade] = useState<Grade | null>(null);
   const [sort, setSort] = useState<SortMode>("best-grade");
+
+  const conditions = useMemo(
+    () =>
+      Array.from(new Set(products.map((p) => p.condition).filter(Boolean))).sort(),
+    [products]
+  );
 
   // Brands available within the current category selection.
   const brandsForCategory = useMemo(() => {
@@ -35,6 +42,7 @@ export default function ShopClient({
     const list = products.filter((p) => {
       if (category && p.category !== category) return false;
       if (brand && p.brand !== brand) return false;
+      if (condition && p.condition !== condition) return false;
       if (grade && p.grade !== grade) return false;
       return true;
     });
@@ -56,7 +64,7 @@ export default function ShopClient({
     });
 
     return list;
-  }, [products, category, brand, grade, sort]);
+  }, [products, category, brand, condition, grade, sort]);
 
   function pickCategory(c: string | null) {
     setCategory(c);
@@ -126,6 +134,36 @@ export default function ShopClient({
           ))}
         </div>
       )}
+
+      {/* Condition filter: New / Refurbished / Used */}
+      <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-circuit/40">
+        <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
+          Condition:
+        </span>
+        <button
+          onClick={() => setCondition(null)}
+          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+            condition === null
+              ? "bg-ink text-paper border-ink"
+              : "border-ink/20 hover:border-ink/50"
+          }`}
+        >
+          All
+        </button>
+        {conditions.map((c) => (
+          <button
+            key={c}
+            onClick={() => setCondition(condition === c ? null : c)}
+            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+              condition === c
+                ? "bg-ink text-paper border-ink"
+                : "border-ink/20 hover:border-ink/50"
+            }`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
 
       {/* Grade + sort row */}
       <div className="flex flex-wrap items-center gap-2 mb-8">

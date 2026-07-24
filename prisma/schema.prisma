@@ -23,6 +23,7 @@ model Product {
   name          String
   category      String
   brand         String?
+  condition     String      @default("Refurbished") // "New" | "Refurbished" | "Used"
   price         Int
   originalPrice Int
   grade         String // "A" | "B" | "C"
@@ -30,6 +31,9 @@ model Product {
   warrantyDays  Int
   seller        String
   specs         String[]
+  description    String?
+  dimensions     String?
+  refurbDetails  String?
   gradeNotes    String
   image         String
   imageUrl      String?

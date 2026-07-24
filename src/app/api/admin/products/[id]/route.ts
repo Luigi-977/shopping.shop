@@ -21,11 +21,15 @@ export async function PATCH(
   if (b.name !== undefined) data.name = b.name;
   if (b.category !== undefined) data.category = b.category;
   if (b.brand !== undefined) data.brand = b.brand || null;
+  if (b.condition !== undefined) data.condition = b.condition;
   if (b.price !== undefined) data.price = Number(b.price);
   if (b.originalPrice !== undefined) data.originalPrice = Number(b.originalPrice);
   if (b.grade !== undefined) data.grade = b.grade;
   if (b.battery !== undefined) data.battery = b.battery ? Number(b.battery) : null;
   if (b.warrantyDays !== undefined) data.warrantyDays = Number(b.warrantyDays);
+  if (b.description !== undefined) data.description = b.description || null;
+  if (b.dimensions !== undefined) data.dimensions = b.dimensions || null;
+  if (b.refurbDetails !== undefined) data.refurbDetails = b.refurbDetails || null;
   if (b.gradeNotes !== undefined) data.gradeNotes = b.gradeNotes;
   if (b.imageUrl !== undefined) data.imageUrl = b.imageUrl || null;
   if (b.inStock !== undefined) data.inStock = Boolean(b.inStock);

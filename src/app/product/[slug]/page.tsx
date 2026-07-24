@@ -63,9 +63,14 @@ export default async function ProductPage({
         </div>
 
         <div>
-          <p className="text-xs font-display uppercase tracking-wide text-wire mb-2">
-            {product.category}
-          </p>
+          <div className="flex items-center gap-2 mb-2">
+            <p className="text-xs font-display uppercase tracking-wide text-wire">
+              {product.category}
+            </p>
+            <span className="text-xs font-display uppercase tracking-wide text-circuit border border-circuit/30 rounded px-2 py-0.5">
+              {product.condition}
+            </span>
+          </div>
           <h1 className="text-3xl font-medium mb-4">{product.name}</h1>
 
           <div className="mb-5">
@@ -82,7 +87,18 @@ export default async function ProductPage({
 
           <AskAboutItem productName={product.name} grade={product.grade} />
 
-          <div className="mt-10 border-t border-ink/10 pt-6">
+          {product.description && (
+            <div className="mt-6 border-t border-ink/10 pt-6">
+              <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">
+                Description
+              </h2>
+              <p className="text-sm text-ink/80 whitespace-pre-line">
+                {product.description}
+              </p>
+            </div>
+          )}
+
+          <div className="mt-6 border-t border-ink/10 pt-6">
             <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">
               Specs
             </h2>
@@ -95,9 +111,23 @@ export default async function ProductPage({
               {product.battery && (
                 <li className="text-ink/80">Battery health: {product.battery}%</li>
               )}
+              {product.dimensions && (
+                <li className="text-ink/80">Size: {product.dimensions}</li>
+              )}
               <li className="text-ink/80">{product.warrantyDays}-day warranty</li>
             </ul>
           </div>
+
+          {product.refurbDetails && (
+            <div className="mt-6 border-t border-ink/10 pt-6">
+              <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">
+                Refurbishment details
+              </h2>
+              <p className="text-sm text-ink/80 whitespace-pre-line">
+                {product.refurbDetails}
+              </p>
+            </div>
+          )}
 
           <div className="mt-6 border-t border-ink/10 pt-6">
             <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">

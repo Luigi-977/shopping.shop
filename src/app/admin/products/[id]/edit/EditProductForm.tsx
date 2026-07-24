@@ -20,12 +20,16 @@ type ProductForm = {
   name: string;
   category: string;
   brand: string;
+  condition: string;
   price: number;
   originalPrice: number;
   grade: string;
   battery: number | null;
   warrantyDays: number;
   specs: string;
+  dimensions: string;
+  description: string;
+  refurbDetails: string;
   gradeNotes: string;
   imageUrl: string | null;
   image: string;
@@ -69,12 +73,16 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         name: form.get("name"),
         category: form.get("category"),
         brand: form.get("brand"),
+        condition: form.get("condition"),
         price: form.get("price"),
         originalPrice: form.get("originalPrice"),
         grade: form.get("grade"),
         battery: form.get("battery"),
         warrantyDays: form.get("warrantyDays"),
         specs: form.get("specs"),
+        dimensions: form.get("dimensions"),
+        description: form.get("description"),
+        refurbDetails: form.get("refurbDetails"),
         gradeNotes: form.get("gradeNotes"),
         imageUrl,
       }),
@@ -140,6 +148,15 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
           </div>
         </div>
 
+        <div>
+          <span className="block text-sm font-medium mb-2">Condition</span>
+          <select name="condition" defaultValue={product.condition} className={inputClass}>
+            <option value="New">New</option>
+            <option value="Refurbished">Refurbished</option>
+            <option value="Used">Used</option>
+          </select>
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium mb-1.5" htmlFor="price">Price (USD)</label>
@@ -174,6 +191,21 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         <div>
           <label className="block text-sm font-medium mb-1.5" htmlFor="specs">Specs (comma-separated)</label>
           <input id="specs" name="specs" defaultValue={product.specs} className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="dimensions">Size / dimensions</label>
+          <input id="dimensions" name="dimensions" defaultValue={product.dimensions} placeholder='e.g. 6.1" screen' className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="description">Full description</label>
+          <textarea id="description" name="description" rows={3} defaultValue={product.description} className={inputClass} />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="refurbDetails">Refurbishment details</label>
+          <textarea id="refurbDetails" name="refurbDetails" rows={2} defaultValue={product.refurbDetails} className={inputClass} />
         </div>
 
         <div>
