@@ -27,11 +27,11 @@ export default function Header() {
             Grading guide
           </Link>
         </nav>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <CurrencyPicker />
           {!loading && (
             user ? (
-              <div className="hidden sm:flex items-center gap-3 text-sm">
+              <div className="flex items-center gap-3 text-sm">
                 {user.role === "admin" && (
                   <Link href="/admin" className="hover:text-circuit transition-colors">
                     Till
@@ -45,7 +45,10 @@ export default function Header() {
                 </button>
               </div>
             ) : (
-              <Link href="/login" className="hidden sm:block text-sm hover:text-circuit transition-colors">
+              <Link
+                href="/login"
+                className="text-sm font-display border border-ink rounded-md px-3 py-1.5 hover:bg-ink hover:text-paper transition-colors"
+              >
                 Log in
               </Link>
             )
