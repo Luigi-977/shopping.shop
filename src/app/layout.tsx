@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,6 +39,7 @@ export default function RootLayout({
               <Header />
               <main>{children}</main>
               <Footer />
+              <FloatingWhatsApp />
             </CartProvider>
           </CurrencyProvider>
         </AuthProvider>

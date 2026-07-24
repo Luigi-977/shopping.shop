@@ -6,6 +6,7 @@ import GradeBadge from "@/components/GradeBadge";
 import ProductCard from "@/components/ProductCard";
 import AddToCart from "./AddToCart";
 import PriceBlock from "./PriceBlock";
+import AskAboutItem from "./AskAboutItem";
 
 export const revalidate = 60;
 
@@ -78,6 +79,8 @@ export default async function ProductPage({
           <PriceBlock price={product.price} originalPrice={product.originalPrice} />
 
           <AddToCart product={product} />
+
+          <AskAboutItem productName={product.name} grade={product.grade} />
 
           <div className="mt-10 border-t border-ink/10 pt-6">
             <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">
