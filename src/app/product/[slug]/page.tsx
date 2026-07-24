@@ -5,6 +5,7 @@ import { GRADE_DESC, Grade } from "@/lib/grading";
 import GradeBadge from "@/components/GradeBadge";
 import ProductCard from "@/components/ProductCard";
 import AddToCart from "./AddToCart";
+import PriceBlock from "./PriceBlock";
 
 export const revalidate = 60;
 
@@ -37,10 +38,6 @@ export default async function ProductPage({
     take: 3,
   });
 
-  const discount = Math.round(
-    (1 - product.price / product.originalPrice) * 100
-  );
-
   return (
     <div className="max-w-6xl mx-auto px-5 py-10">
       <nav className="text-sm text-wire mb-8">
@@ -69,17 +66,7 @@ export default async function ProductPage({
             {GRADE_DESC[product.grade as Grade]}
           </p>
 
-          <div className="flex items-baseline gap-3 mb-1">
-            <span className="font-display font-bold text-3xl">
-              ${product.price}
-            </span>
-            <span className="text-lg text-wire line-through">
-              ${product.originalPrice}
-            </span>
-          </div>
-          <p className="text-sm text-circuit font-display mb-8">
-            You save {discount}% off retail
-          </p>
+          <PriceBlock price={product.price} originalPrice={product.originalPrice} />
 
           <AddToCart product={product} />
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useCart } from "@/lib/cart-context";
+import { useCurrency } from "@/lib/currency-context";
 import { useAuth } from "@/lib/auth-context";
 import GradeBadge from "@/components/GradeBadge";
 import { Grade } from "@/lib/grading";
@@ -10,6 +11,7 @@ import { Grade } from "@/lib/grading";
 export default function CartPage() {
   const { lines, remove, setQty, subtotal, checkout } = useCart();
   const { user } = useAuth();
+  const { format } = useCurrency();
   const [email, setEmail] = useState("");
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +107,7 @@ export default function CartPage() {
               </button>
             </div>
             <span className="font-display font-bold w-16 text-right">
-              ${product.price * qty}
+              {format(product.price * qty)}
             </span>
             <button
               onClick={() => remove(product.slug)}
@@ -122,7 +124,7 @@ export default function CartPage() {
         <span />
         <div className="text-right">
           <p className="text-sm text-wire mb-1">Subtotal</p>
-          <p className="font-display font-bold text-2xl">${subtotal}</p>
+          <p className="font-display font-bold text-2xl">{format(subtotal)}</p>
         </div>
       </div>
 
@@ -153,7 +155,7 @@ export default function CartPage() {
         disabled={loading}
         className="w-full bg-ink text-paper font-display text-sm px-5 py-4 rounded-md hover:bg-ink-soft transition-colors disabled:opacity-60"
       >
-        {loading ? "Placing order…" : `Checkout — $${subtotal}`}
+        {loading ? "Placing order…" : `Checkout — ${format(subtotal)}`}
       </button>
     </div>
   );

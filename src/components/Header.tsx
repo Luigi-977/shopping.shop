@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { useAuth } from "@/lib/auth-context";
+import CurrencyPicker from "./CurrencyPicker";
 
 export default function Header() {
   const { count } = useCart();
@@ -27,6 +28,7 @@ export default function Header() {
           </Link>
         </nav>
         <div className="flex items-center gap-3">
+          <CurrencyPicker />
           {!loading && (
             user ? (
               <div className="hidden sm:flex items-center gap-3 text-sm">

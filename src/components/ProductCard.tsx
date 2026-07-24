@@ -1,9 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import type { Product } from "@prisma/client";
 import { Grade } from "@/lib/grading";
+import { useCurrency } from "@/lib/currency-context";
 import GradeBadge from "./GradeBadge";
 
 export default function ProductCard({ product }: { product: Product }) {
+  const { format } = useCurrency();
   const discount = Math.round(
     (1 - product.price / product.originalPrice) * 100
   );
@@ -26,12 +30,12 @@ export default function ProductCard({ product }: { product: Product }) {
         <h3 className="font-medium text-ink leading-snug mb-2 group-hover:underline decoration-signal decoration-2 underline-offset-2">
           {product.name}
         </h3>
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-baseline gap-2 flex-wrap">
           <span className="font-display font-bold text-lg">
-            ${product.price}
+            {format(product.price)}
           </span>
           <span className="text-sm text-wire line-through">
-            ${product.originalPrice}
+            {format(product.originalPrice)}
           </span>
           <span className="text-xs font-display text-circuit ml-auto">
             −{discount}%
