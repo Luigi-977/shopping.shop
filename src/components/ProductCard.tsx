@@ -34,6 +34,13 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="absolute top-3 left-3">
           <GradeBadge grade={product.grade as Grade} size="sm" />
         </div>
+        {!product.inStock && (
+          <div className="absolute inset-0 bg-paper/70 flex items-center justify-center">
+            <span className="font-display text-xs font-bold uppercase bg-ink text-paper px-3 py-1.5 rounded">
+              Sold out
+            </span>
+          </div>
+        )}
       </div>
       <div className="p-4">
         <div className="flex items-center gap-2 mb-1">

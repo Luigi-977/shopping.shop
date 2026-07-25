@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import AdminOrderList from "./AdminOrderList";
 
 export const dynamic = "force-dynamic";
 
@@ -91,52 +92,22 @@ export default async function AdminPage() {
         Orders
       </h2>
 
-      {orders.length === 0 ? (
-        <p className="text-wire text-sm">No orders yet.</p>
-      ) : (
-        <div className="space-y-3">
-          {orders.map((order) => (
-            <details
-              key={order.id}
-              className="border border-ink/10 rounded-lg p-4 group"
-            >
-              <summary className="flex items-center justify-between gap-3 cursor-pointer list-none">
-                <div className="min-w-0">
-                  <p className="font-medium truncate">{order.email}</p>
-                  <p className="text-xs text-wire">
-                    {new Date(order.createdAt).toLocaleString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                    {" · "}
-                    {order.items.length} item{order.items.length > 1 ? "s" : ""}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <span className="text-xs font-display uppercase bg-circuit-soft text-circuit px-2 py-1 rounded">
-                    {order.status}
-                  </span>
-                  <span className="font-display font-bold">${order.total}</span>
-                </div>
-              </summary>
-              <div className="mt-4 pt-4 border-t border-ink/10 divide-y divide-ink/10 text-sm">
-                {order.items.map((item) => (
-                  <div key={item.id} className="py-1.5 flex items-center gap-2">
-                    <span>{item.product.image}</span>
-                    <span className="flex-1">{item.product.name}</span>
-                    <span className="text-wire">×{item.qty}</span>
-                    <span className="font-display w-14 text-right">
-                      ${item.priceAtPurchase * item.qty}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </details>
-          ))}
-        </div>
-      )}
+      <AdminOrderList
+        orders={orders.map((order) => ({
+          id: order.id,
+          email: order.email,
+          status: order.status,
+          total: order.total,
+          createdAt: order.createdAt.toISOString(),
+          items: order.items.map((item) => ({
+            id: item.id,
+            name: item.product.name,
+            image: item.product.image,
+            qty: item.qty,
+            lineTotal: item.priceAtPurchase * item.qty,
+          })),
+        }))}
+      />
     </div>
   );
 }

@@ -95,6 +95,7 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         description: form.get("description"),
         refurbDetails: form.get("refurbDetails"),
         gradeNotes: form.get("gradeNotes"),
+        inStock: form.get("inStock") === "on",
         imageUrls,
       }),
     });
@@ -235,6 +236,18 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         <div>
           <label className="block text-sm font-medium mb-1.5" htmlFor="gradeNotes">Condition notes</label>
           <textarea id="gradeNotes" name="gradeNotes" rows={2} defaultValue={product.gradeNotes} className={inputClass} />
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="inStock"
+              defaultChecked={product.inStock}
+              className="w-4 h-4"
+            />
+            <span className="text-sm font-medium">In stock (uncheck to mark sold out)</span>
+          </label>
         </div>
 
         {error && <p className="text-sm text-rust">{error}</p>}

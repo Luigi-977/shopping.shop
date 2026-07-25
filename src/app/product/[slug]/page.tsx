@@ -88,7 +88,16 @@ export default async function ProductPage({
 
           <PriceBlock price={product.price} originalPrice={product.originalPrice} />
 
-          <AddToCart product={product} />
+          {product.inStock ? (
+            <AddToCart product={product} />
+          ) : (
+            <div className="bg-ink/[0.04] border border-ink/10 rounded-md px-5 py-4 text-center">
+              <p className="font-display font-bold text-sm">Sold out</p>
+              <p className="text-xs text-wire mt-1">
+                Waiting for new stock — message us to be notified when it&rsquo;s back.
+              </p>
+            </div>
+          )}
 
           <AskAboutItem productName={product.name} grade={product.grade} />
 

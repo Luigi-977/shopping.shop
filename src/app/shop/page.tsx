@@ -11,8 +11,7 @@ export const revalidate = 60;
 
 export default async function ShopPage() {
   const products = await prisma.product.findMany({
-    where: { inStock: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ inStock: "desc" }, { createdAt: "desc" }],
   });
   const categories = Array.from(new Set(products.map((p) => p.category)));
 
