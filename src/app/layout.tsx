@@ -5,6 +5,7 @@ import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
 import { CurrencyProvider } from "@/lib/currency-context";
 import Header from "@/components/Header";
+import BackNav from "@/components/BackNav";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import CareChat from "@/components/CareChat";
@@ -33,6 +34,7 @@ export default function RootLayout({
           <CurrencyProvider>
             <CartProvider>
               <Header />
+              <BackNav />
               <main>{children}</main>
               <Footer />
               <FloatingWhatsApp />
