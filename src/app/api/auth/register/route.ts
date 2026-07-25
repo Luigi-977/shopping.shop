@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/auth";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const { email, password, name } = await req.json();
@@ -30,6 +31,9 @@ export async function POST(req: NextRequest) {
   });
 
   await createSession({ userId: user.id, email: user.email, role: user.role });
+
+  // Fire-and-forget welcome email; never block signup on email.
+  sendWelcomeEmail(user.email, user.name).catch(() => {});
 
   return NextResponse.json({ id: user.id, email: user.email, name: user.name });
 }

@@ -7,6 +7,7 @@ import { CurrencyProvider } from "@/lib/currency-context";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import CareChat from "@/components/CareChat";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -40,6 +41,7 @@ export default function RootLayout({
               <main>{children}</main>
               <Footer />
               <FloatingWhatsApp />
+              <CareChat />
             </CartProvider>
           </CurrencyProvider>
         </AuthProvider>

@@ -7,6 +7,8 @@ import {
   flutterwaveChargeCurrency,
 } from "@/lib/flutterwave";
 import { CurrencyCode } from "@/lib/currency";
+import { formatPrice } from "@/lib/currency";
+import { sendOrderConfirmationEmail } from "@/lib/email";
 
 // Called by the callback page after Flutterwave redirects the buyer back.
 export async function POST(req: NextRequest) {
@@ -48,6 +50,27 @@ export async function POST(req: NextRequest) {
     where: { id: orderId },
     data: { status: "paid" },
   });
+
+  // Send confirmation email (non-blocking). Build a short item summary.
+  try {
+    const full = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: { include: { product: true } } },
+    });
+    if (full) {
+      const summary = full.items
+        .map((i) => `${i.qty} × ${i.product.name}`)
+        .join("<br/>");
+      sendOrderConfirmationEmail(
+        full.email,
+        full.id,
+        summary,
+        formatPrice(full.total, "USD")
+      ).catch(() => {});
+    }
+  } catch {
+    // never block the payment confirmation on email
+  }
 
   return NextResponse.json({ ok: true, orderId, status: "paid" });
 }

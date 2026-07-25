@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TranslateWidget from "./TranslateWidget";
 
 export default function Footer() {
   return (
@@ -9,6 +10,9 @@ export default function Footer() {
             REBOOT<span className="text-wire">/MARKET</span>
           </p>
           <p>Second-hand electronics, graded and warrantied.</p>
+          <div className="mt-4">
+            <TranslateWidget />
+          </div>
         </div>
         <div className="flex flex-wrap gap-10">
           <div>
