@@ -1,8 +1,12 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import GradeBadge from "@/components/GradeBadge";
 import { Grade } from "@/lib/grading";
+import AccountClient from "./AccountClient";
+
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const user = await getCurrentUser();
@@ -14,28 +18,75 @@ export default async function AccountPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  return (
-    <div className="max-w-2xl mx-auto px-5 py-10">
-      <h1 className="text-2xl font-medium mb-1">
-        {user.name ? `Hi, ${user.name}` : "Your account"}
-      </h1>
-      <p className="text-wire mb-8">{user.email}</p>
+  const totalSpent = orders
+    .filter((o) => o.status === "paid")
+    .reduce((sum, o) => sum + o.total, 0);
+  const paidCount = orders.filter((o) => o.status === "paid").length;
 
+  return (
+    <div className="max-w-3xl mx-auto px-5 py-10">
+      {/* Header + editable profile */}
+      <AccountClient
+        initialName={user.name}
+        email={user.email}
+        isAdmin={user.role === "admin"}
+      />
+
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3 my-8">
+        <div className="border border-ink/10 rounded-lg p-4 text-center">
+          <p className="font-display font-bold text-2xl">{orders.length}</p>
+          <p className="text-xs text-wire">orders</p>
+        </div>
+        <div className="border border-ink/10 rounded-lg p-4 text-center">
+          <p className="font-display font-bold text-2xl">{paidCount}</p>
+          <p className="text-xs text-wire">completed</p>
+        </div>
+        <div className="border border-ink/10 rounded-lg p-4 text-center">
+          <p className="font-display font-bold text-2xl">${totalSpent}</p>
+          <p className="text-xs text-wire">total spent</p>
+        </div>
+      </div>
+
+      {/* Quick links */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
+        <Link href="/shop" className="border border-ink/10 rounded-lg p-4 text-center hover:border-ink/30 transition-colors">
+          <p className="text-2xl mb-1">🛍️</p>
+          <p className="text-sm font-medium">Shop</p>
+        </Link>
+        <Link href="/sell" className="border border-ink/10 rounded-lg p-4 text-center hover:border-ink/30 transition-colors">
+          <p className="text-2xl mb-1">💸</p>
+          <p className="text-sm font-medium">Sell a device</p>
+        </Link>
+        <Link href="/contact" className="border border-ink/10 rounded-lg p-4 text-center hover:border-ink/30 transition-colors">
+          <p className="text-2xl mb-1">📍</p>
+          <p className="text-sm font-medium">Contact</p>
+        </Link>
+        <Link href="/policies" className="border border-ink/10 rounded-lg p-4 text-center hover:border-ink/30 transition-colors">
+          <p className="text-2xl mb-1">📋</p>
+          <p className="text-sm font-medium">Policies</p>
+        </Link>
+      </div>
+
+      {/* Orders */}
       <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-4">
         Order history
       </h2>
 
       {orders.length === 0 ? (
-        <p className="text-wire text-sm">No orders yet.</p>
+        <div className="border border-ink/10 rounded-lg p-8 text-center">
+          <p className="text-wire text-sm mb-4">You haven&rsquo;t placed any orders yet.</p>
+          <Link href="/shop" className="inline-block bg-ink text-paper font-display text-sm px-5 py-3 rounded-md">
+            Start shopping
+          </Link>
+        </div>
       ) : (
         <div className="space-y-6">
           {orders.map((order) => (
             <div key={order.id} className="border border-ink/10 rounded-lg p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <p className="font-display text-sm">
-                    Order #{order.id.slice(-8)}
-                  </p>
+                  <p className="font-display text-sm">Order #{order.id.slice(-8)}</p>
                   <p className="text-xs text-wire">
                     {new Date(order.createdAt).toLocaleDateString(undefined, {
                       year: "numeric",
