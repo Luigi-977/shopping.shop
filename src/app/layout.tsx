@@ -17,9 +17,38 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Reboot Market — Graded second-hand electronics",
+  metadataBase: new URL("https://shopping-shop-ashy.vercel.app"),
+  title: {
+    default: "Reboot Market — Refurbished Phones, Laptops & Electronics in Kenya",
+    template: "%s | Reboot Market",
+  },
   description:
-    "Phones, laptops, cameras and more, every one graded A–C and warrantied. Buy or sell used electronics with a condition you can trust.",
+    "Buy graded, warrantied refurbished iPhones, Samsung, laptops, TVs and more. Every device inspected, graded A–C, and covered by warranty. Card & M-Pesa accepted.",
+  keywords: [
+    "refurbished phones Kenya",
+    "second hand phones Nairobi",
+    "used iPhone Kenya",
+    "refurbished Samsung Kenya",
+    "cheap laptops Kenya",
+    "refurbished electronics",
+    "buy phones Kenya M-Pesa",
+    "graded phones Kenya",
+  ],
+  openGraph: {
+    title: "Reboot Market — Refurbished Electronics You Can Trust",
+    description:
+      "Graded, warrantied refurbished phones, laptops and electronics. Card & M-Pesa accepted, delivery across Kenya.",
+    type: "website",
+    locale: "en_KE",
+    siteName: "Reboot Market",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Reboot Market — Refurbished Electronics You Can Trust",
+    description:
+      "Graded, warrantied refurbished phones, laptops and electronics. Card & M-Pesa accepted.",
+  },
+  robots: { index: true, follow: true },
 };
 
 export default function RootLayout({

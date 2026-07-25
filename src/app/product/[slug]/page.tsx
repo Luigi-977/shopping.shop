@@ -9,6 +9,7 @@ import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
+import LipaPolePole from "./LipaPolePole";
 
 export const revalidate = 60;
 
@@ -24,7 +25,27 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const product = await prisma.product.findUnique({ where: { slug } });
-  return { title: product ? `${product.name} — Reboot Market` : "Not found" };
+  if (!product) return { title: "Not found" };
+
+  const desc = `${product.condition} ${product.name} — Grade ${product.grade}, ${product.warrantyDays}-day warranty. ${product.gradeNotes} Buy with card or M-Pesa, delivery across Kenya.`;
+  const photo = (product.imageUrls && product.imageUrls[0]) || product.imageUrl;
+
+  return {
+    title: `${product.name} (${product.condition})`,
+    description: desc.slice(0, 160),
+    openGraph: {
+      title: `${product.name} — ${product.condition}, graded & warrantied`,
+      description: desc.slice(0, 200),
+      images: photo ? [{ url: photo }] : undefined,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${product.name} — Reboot Market`,
+      description: desc.slice(0, 200),
+      images: photo ? [photo] : undefined,
+    },
+  };
 }
 
 export default async function ProductPage({
@@ -97,6 +118,10 @@ export default async function ProductPage({
                 Waiting for new stock — message us to be notified when it&rsquo;s back.
               </p>
             </div>
+          )}
+
+          {product.inStock && (
+            <LipaPolePole productName={product.name} price={product.price} />
           )}
 
           <AskAboutItem productName={product.name} grade={product.grade} />
