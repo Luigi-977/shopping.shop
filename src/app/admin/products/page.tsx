@@ -22,7 +22,7 @@ export default async function AdminProductsPage() {
     grade: p.grade,
     price: p.price,
     image: p.image,
-    imageUrl: p.imageUrl,
+    imageUrl: (p.imageUrls && p.imageUrls[0]) || p.imageUrl,
     hasPhoto: Boolean(p.imageUrl || (p.imageUrls && p.imageUrls.length > 0)),
   }));
 

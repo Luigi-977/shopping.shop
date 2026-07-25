@@ -15,19 +15,22 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       href={`/product/${product.slug}`}
-      className="group block bg-paper-dim/60 border border-ink/10 rounded-lg overflow-hidden hover:border-ink/30 transition-colors"
+      className="group block bg-white border border-ink/10 rounded-lg overflow-hidden hover:shadow-md hover:border-ink/20 transition-all"
     >
       <div className="aspect-square flex items-center justify-center text-6xl bg-ink/[0.03] relative overflow-hidden">
-        {product.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          product.image
-        )}
+        {(() => {
+          const photo = (product.imageUrls && product.imageUrls[0]) || product.imageUrl;
+          return photo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={photo}
+              alt={product.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            product.image
+          );
+        })()}
         <div className="absolute top-3 left-3">
           <GradeBadge grade={product.grade as Grade} size="sm" />
         </div>
@@ -45,13 +48,13 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="font-display font-bold text-lg">
+          <span className="font-display font-extrabold text-lg text-ink">
             {format(product.price)}
           </span>
           <span className="text-sm text-wire line-through">
             {format(product.originalPrice)}
           </span>
-          <span className="text-xs font-display text-circuit ml-auto">
+          <span className="text-[11px] font-display font-bold text-rust bg-rust/10 rounded px-1.5 py-0.5 ml-auto">
             −{discount}%
           </span>
         </div>
