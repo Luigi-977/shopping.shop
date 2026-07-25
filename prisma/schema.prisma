@@ -41,6 +41,7 @@ model Product {
   imageUrls     String[]
   inStock       Boolean     @default(true)
   orderItems    OrderItem[]
+  reviews       Review[]
   createdAt     DateTime    @default(now())
 }
 
@@ -95,4 +96,15 @@ model ChatMessage {
   body      String
   readByAdmin Boolean  @default(false)
   createdAt DateTime   @default(now())
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  String
+  authorName String
+  rating     Int      // 1-5
+  body       String
+  approved   Boolean  @default(true)
+  createdAt  DateTime @default(now())
 }

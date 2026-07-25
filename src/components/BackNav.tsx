@@ -10,7 +10,7 @@ export default function BackNav() {
   if (pathname === "/") return null;
 
   return (
-    <div className="max-w-6xl mx-auto px-5 pt-4">
+    <div className="max-w-6xl mx-auto px-5 pt-3 -mb-2">
       <BackButton />
     </div>
   );

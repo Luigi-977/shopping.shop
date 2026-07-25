@@ -8,6 +8,7 @@ import AddToCart from "./AddToCart";
 import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
+import ReviewSection from "./ReviewSection";
 
 export const revalidate = 60;
 
@@ -38,6 +39,11 @@ export default async function ProductPage({
   const related = await prisma.product.findMany({
     where: { category: product.category, slug: { not: product.slug }, inStock: true },
     take: 3,
+  });
+
+  const reviews = await prisma.review.findMany({
+    where: { productId: product.id, approved: true },
+    orderBy: { createdAt: "desc" },
   });
 
   return (
@@ -136,6 +142,17 @@ export default async function ProductPage({
           </div>
         </div>
       </div>
+
+      <ReviewSection
+        productId={product.id}
+        initialReviews={reviews.map((r) => ({
+          id: r.id,
+          authorName: r.authorName,
+          rating: r.rating,
+          body: r.body,
+          createdAt: r.createdAt.toISOString(),
+        }))}
+      />
 
       {related.length > 0 && (
         <section className="mt-20">

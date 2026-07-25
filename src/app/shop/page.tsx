@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import ShopClient from "./ShopClient";
+import TrustBar from "@/components/TrustBar";
 
 export const metadata: Metadata = {
   title: "Shop — Reboot Market",
@@ -15,5 +16,10 @@ export default async function ShopPage() {
   });
   const categories = Array.from(new Set(products.map((p) => p.category)));
 
-  return <ShopClient products={products} categories={categories} />;
+  return (
+    <>
+      <TrustBar />
+      <ShopClient products={products} categories={categories} />
+    </>
+  );
 }
