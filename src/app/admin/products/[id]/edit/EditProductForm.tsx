@@ -146,7 +146,6 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
                 multiple
                 onChange={handlePhoto}
                 className="hidden"

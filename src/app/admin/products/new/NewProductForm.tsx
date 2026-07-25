@@ -114,7 +114,6 @@ export default function NewProductForm() {
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
                 multiple
                 onChange={handlePhoto}
                 className="hidden"
