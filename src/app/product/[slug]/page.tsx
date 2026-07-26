@@ -9,7 +9,6 @@ import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
-import LipaPolePole from "./LipaPolePole";
 
 export const revalidate = 60;
 
@@ -118,10 +117,6 @@ export default async function ProductPage({
                 Waiting for new stock — message us to be notified when it&rsquo;s back.
               </p>
             </div>
-          )}
-
-          {product.inStock && (
-            <LipaPolePole productName={product.name} price={product.price} />
           )}
 
           <AskAboutItem productName={product.name} grade={product.grade} />
