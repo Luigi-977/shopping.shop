@@ -70,22 +70,40 @@ export async function sendOrderConfirmationEmail(
   to: string,
   orderId: string,
   itemsSummary: string,
-  total: string
+  total: string,
+  customerName?: string | null
 ) {
+  const greeting = customerName ? `Hi ${customerName},` : "Hi there,";
   await sendEmail({
     to,
-    subject: `Your order #${orderId.slice(-8)} is confirmed`,
+    subject: `Your order #${orderId.slice(-8)} — please confirm your delivery details`,
     html: shell(
-      "Payment received — your order is being prepared 📦",
-      `<p>Thank you! We've received your payment and your order is now being
-       prepared for shipment.</p>
+      "Thank you for your order! 🎉",
+      `<p>${greeting}</p>
+       <p>Welcome, and thank you for shopping with Reboot Market! We've
+       received your payment and your order is now <strong>wait-listed for
+       delivery</strong>.</p>
        <p style="margin:16px 0; padding:16px; background:#edeae2; border-radius:8px;">
          <strong>Order #${orderId.slice(-8)}</strong><br/>
          ${itemsSummary}<br/>
          <strong>Total paid: ${total}</strong>
        </p>
-       <p>We'll be in touch with shipping details. If you have any questions,
-       just reply to this email or contact us on WhatsApp.</p>`
+       <p style="padding:16px; background:#fff6e0; border-radius:8px; border:1px solid #ffb000;">
+         <strong>📦 Action needed — send us your delivery details</strong><br/>
+         To get your order out to you as fast as possible, please reply to this
+         email (or message us on WhatsApp) with:
+       </p>
+       <ul style="color:#1f262c; font-size:14px; line-height:1.7;">
+         <li>Your full name</li>
+         <li>Phone number</li>
+         <li>Delivery address / area</li>
+         <li>Any landmark or delivery notes</li>
+       </ul>
+       <p>As soon as we have your details, we'll confirm your delivery window
+       and get your device on its way. Most local deliveries go out within a
+       day.</p>
+       <p style="margin-top:20px;">Thank you for trusting us — we can't wait to
+       get your device to you!</p>`
     ),
   });
 }

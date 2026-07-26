@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   try {
     const full = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { product: true } } },
+      include: { items: { include: { product: true } }, user: true },
     });
     if (full) {
       const summary = full.items
@@ -65,7 +65,8 @@ export async function POST(req: NextRequest) {
         full.email,
         full.id,
         summary,
-        formatPrice(full.total, "USD")
+        formatPrice(full.total, "USD"),
+        full.user?.name
       ).catch(() => {});
     }
   } catch {
