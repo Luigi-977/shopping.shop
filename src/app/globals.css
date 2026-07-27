@@ -26,8 +26,8 @@
   --color-rust: var(--rust);
   --color-flash: var(--flash);
   --color-flash-soft: var(--flash-soft);
-  --font-display: var(--font-jakarta);
-  --font-body: var(--font-jakarta);
+  --font-display: var(--font-grotesk);
+  --font-body: var(--font-sora);
 }
 
 html {

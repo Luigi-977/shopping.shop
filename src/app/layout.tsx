@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Space_Grotesk, Sora } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
@@ -9,10 +9,19 @@ import Footer from "@/components/Footer";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import CareChat from "@/components/CareChat";
 
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
+// Space Grotesk: distinctive, geometric — used for headings, buttons, the
+// grade-tag spec labels, anywhere the site wants character.
+const grotesk = Space_Grotesk({
+  variable: "--font-grotesk",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["500", "600", "700"],
+});
+
+// Sora: clean and highly readable at small sizes — used for body copy.
+const sora = Sora({
+  variable: "--font-sora",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -57,7 +66,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jakarta.variable} antialiased`}>
+      <body className={`${grotesk.variable} ${sora.variable} antialiased`}>
         <AuthProvider>
           <CurrencyProvider>
             <CartProvider>
