@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
   Menu,
@@ -50,25 +51,21 @@ const CATEGORIES = [
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- standard SSR-safe portal mount flag; document.body only exists client-side
+    setMounted(true);
+  }, []);
 
   function close() {
     setOpen(false);
   }
 
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        aria-label="Open menu"
-        className="md:hidden w-9 h-9 flex items-center justify-center -ml-1.5"
-      >
-        <Menu size={22} />
-      </button>
-
-      {open && (
-        <div className="fixed inset-0 z-[60] md:hidden">
-          <div className="absolute inset-0 bg-ink/50" onClick={close} />
+  const drawer = (
+    <div className="fixed inset-0 z-[60] md:hidden">
+      <div className="absolute inset-0 bg-ink/50" onClick={close} />
           <div className="absolute inset-y-0 left-0 w-[82vw] max-w-xs bg-paper shadow-2xl flex flex-col overflow-y-auto">
             <div className="bg-ink text-paper px-5 py-5">
               <div className="flex items-center justify-between mb-4">
@@ -184,7 +181,19 @@ export default function MobileMenu() {
             )}
           </div>
         </div>
-      )}
+  );
+
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        aria-label="Open menu"
+        className="md:hidden w-9 h-9 flex items-center justify-center -ml-1.5"
+      >
+        <Menu size={22} />
+      </button>
+
+      {open && mounted && createPortal(drawer, document.body)}
     </>
   );
 }
