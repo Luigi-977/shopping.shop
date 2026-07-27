@@ -57,6 +57,12 @@ export default async function AdminPage() {
         >
           Customer care
         </a>
+        <a
+          href="/admin/reviews"
+          className="border border-ink font-display text-sm px-4 py-2.5 rounded-md hover:bg-ink hover:text-paper transition-colors"
+        >
+          Reviews
+        </a>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
