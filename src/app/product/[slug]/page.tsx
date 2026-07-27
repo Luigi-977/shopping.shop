@@ -9,6 +9,7 @@ import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
+import DeliveryEstimator from "@/components/DeliveryEstimator";
 
 export const revalidate = 60;
 
@@ -120,6 +121,8 @@ export default async function ProductPage({
           )}
 
           <AskAboutItem productName={product.name} grade={product.grade} />
+
+          <DeliveryEstimator />
 
           {product.description && (
             <div className="mt-6 border-t border-ink/10 pt-6">

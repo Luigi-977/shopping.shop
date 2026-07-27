@@ -26,6 +26,9 @@ export default function Header() {
           <Link href="/shop#grading" className="hover:text-circuit transition-colors">
             Grading guide
           </Link>
+          <Link href="/how-it-works" className="hover:text-circuit transition-colors">
+            How it works
+          </Link>
         </nav>
         <div className="flex items-center gap-2">
           <CurrencyPicker />

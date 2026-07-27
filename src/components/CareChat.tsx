@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { Headset, X, Languages } from "lucide-react";
+import { CHAT_LANGUAGES, translateText } from "@/lib/translate";
 
 type Msg = { id: string; fromAdmin: boolean; body: string; createdAt: string };
 
@@ -11,6 +13,8 @@ export default function CareChat() {
   const [guestName, setGuestName] = useState("");
   const [started, setStarted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [lang, setLang] = useState("en");
+  const [translated, setTranslated] = useState<Record<string, string>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -38,6 +42,28 @@ export default function CareChat() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
 
+  // Translate incoming admin replies into the customer's chosen language.
+  // Original (English) text always stays in the database — this only
+  // affects what's shown on screen.
+  useEffect(() => {
+    if (lang === "en") return;
+    let cancelled = false;
+    (async () => {
+      for (const m of messages) {
+        if (!m.fromAdmin) continue;
+        const key = `${m.id}:${lang}`;
+        if (translated[key]) continue;
+        const t = await translateText(m.body, lang, "en");
+        if (!cancelled) {
+          setTranslated((prev) => ({ ...prev, [key]: t }));
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [messages, lang, translated]);
+
   async function send() {
     const body = input.trim();
     if (!body) return;
@@ -63,22 +89,39 @@ export default function CareChat() {
 
   return (
     <>
-      {/* Launcher button (sits above the WhatsApp button) */}
+      {/* Launcher button (bottom-left, so it doesn't stack on the WhatsApp button) */}
       <button
         onClick={() => setOpen((o) => !o)}
         aria-label="Customer care chat"
-        className="fixed bottom-20 right-5 z-50 flex items-center gap-2 bg-ink text-paper font-display text-sm font-bold px-4 py-3 rounded-full shadow-lg hover:bg-ink-soft transition"
+        className="fixed bottom-5 left-5 z-50 flex items-center justify-center w-14 h-14 bg-ink text-paper rounded-full shadow-lg hover:bg-ink-soft transition"
       >
-        {open ? "Close" : "Help"}
+        {open ? <X size={22} /> : <Headset size={22} />}
       </button>
 
       {open && (
-        <div className="fixed bottom-36 right-5 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] bg-paper border border-ink/15 rounded-xl shadow-2xl flex flex-col overflow-hidden">
-          <div className="bg-ink text-paper px-4 py-3">
-            <p className="font-display font-bold text-sm">Customer care</p>
-            <p className="text-xs text-paper/60">
-              We usually reply within a few hours.
-            </p>
+        <div className="fixed bottom-20 left-5 z-50 w-[90vw] max-w-sm h-[60vh] max-h-[500px] bg-paper border border-ink/15 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+          <div className="bg-ink text-paper px-4 py-3 flex items-center justify-between gap-2">
+            <div>
+              <p className="font-display font-bold text-sm">Customer care</p>
+              <p className="text-xs text-paper/60">
+                We usually reply within a few hours.
+              </p>
+            </div>
+            <label className="flex items-center gap-1 shrink-0 bg-paper/10 rounded-md px-1.5 py-1">
+              <Languages size={13} className="text-paper/70" />
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                aria-label="Chat language"
+                className="bg-transparent text-paper text-xs focus:outline-none"
+              >
+                {CHAT_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code} className="text-ink">
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -96,7 +139,7 @@ export default function CareChat() {
                     : "bg-circuit text-paper ml-auto"
                 }`}
               >
-                {m.body}
+                {m.fromAdmin && lang !== "en" ? translated[`${m.id}:${lang}`] ?? m.body : m.body}
               </div>
             ))}
           </div>

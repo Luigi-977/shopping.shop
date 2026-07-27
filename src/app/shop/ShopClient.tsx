@@ -78,7 +78,7 @@ export default function ShopClient({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-10">
+    <div className="max-w-6xl mx-auto px-5 pt-10 pb-28">
       <h1 className="text-2xl font-medium mb-1">Shop</h1>
       <p className="text-wire mb-4">{filtered.length} devices in stock</p>
 
@@ -150,7 +150,7 @@ export default function ShopClient({
       )}
 
       {/* Condition filter: New / Refurbished / Used */}
-      <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-circuit/40">
+      <div className="flex flex-wrap gap-2 mb-3 pl-1 pr-14 border-l-2 border-circuit/40">
         <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
           Condition:
         </span>
@@ -180,7 +180,7 @@ export default function ShopClient({
       </div>
 
       {/* Grade + sort row */}
-      <div className="flex flex-wrap items-center gap-2 mb-8">
+      <div className="flex flex-wrap items-center gap-2 mb-8 pl-1 pr-14">
         {(["A", "B", "C"] as Grade[]).map((g) => (
           <button
             key={g}
