@@ -76,14 +76,20 @@ export function estimateDelivery(code: string): DeliveryEstimate | null {
   const country = COUNTRIES.find((c) => c.code === code);
   if (!country) return null;
 
-  // Every order originates from the Shenzhen supply hub.
   const distanceKm = Math.round(haversineKm(HUBS.shenzhen, country));
 
-  // Rough courier-speed model: ~700km/day equivalent once air freight +
-  // customs + last-mile are folded in, with a floor/ceiling for realism.
-  const base = Math.max(2, Math.round(distanceKm / 900));
-  const etaDaysLow = base + (country.region === "Africa" ? 1 : 2);
-  const etaDaysHigh = etaDaysLow + 3;
+  // Air-freight model, capped at a maximum of 3-4 working days. Nearby
+  // regions (Africa) run faster; farther regions still top out at 4.
+  const REGION_TIER: Record<DeliveryEstimate["region"], number> = {
+    Africa: 0,
+    Europe: 1,
+    Asia: 1,
+    Americas: 2,
+    Oceania: 2,
+  };
+  const tier = REGION_TIER[country.region];
+  const etaDaysLow = 1 + tier;
+  const etaDaysHigh = Math.min(4, etaDaysLow + 1);
 
   const doorstep = !NO_DOORSTEP_DELIVERY.has(code);
 

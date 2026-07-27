@@ -55,8 +55,12 @@ export default function DeliveryEstimator() {
               <Clock size={16} className="text-circuit mt-0.5 shrink-0" />
               <p className="text-sm text-ink">
                 Flown to your door by <span className="font-semibold">air freight</span> in{" "}
-                <span className="font-semibold">{result.etaDaysLow}–{result.etaDaysHigh} days</span> from
-                our {HUBS.shenzhen.name} supply hub — no slow sea shipping, no weeks-long wait.
+                <span className="font-semibold">
+                  {result.etaDaysLow}–{result.etaDaysHigh} working days
+                </span>{" "}
+                from our {HUBS.shenzhen.name} supply hub — no slow sea shipping. Exact timing depends on{" "}
+                {result.country.name} and how early in the day you order: orders placed before 2pm
+                (Nairobi time) on a working day ship the same day.
               </p>
             </div>
           ) : (
@@ -70,8 +74,11 @@ export default function DeliveryEstimator() {
                   <Store size={13} className="text-circuit" />
                   {result.redirectHub?.name}
                 </span>{" "}
-                — for pickup, arriving in about{" "}
-                <span className="font-semibold">{result.etaDaysLow}–{result.etaDaysHigh} days</span>.
+                — for pickup, up to a maximum of{" "}
+                <span className="font-semibold">
+                  {result.etaDaysLow}–{result.etaDaysHigh} working days
+                </span>
+                .
               </p>
             </div>
           )}
@@ -80,7 +87,7 @@ export default function DeliveryEstimator() {
             origin={HUBS.shenzhen}
             destination={result.country}
             waypoint={result.redirectHub}
-            etaLabel={`${result.etaDaysLow}–${result.etaDaysHigh} days`}
+            etaLabel={`${result.etaDaysLow}–${result.etaDaysHigh} working days`}
           />
 
           <a href="/how-it-works" className="text-xs text-circuit hover:underline inline-block">

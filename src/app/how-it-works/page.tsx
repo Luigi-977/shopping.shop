@@ -22,7 +22,7 @@ const STEPS = [
   {
     Icon: MapPin,
     title: "3. Check your delivery estimate",
-    body: "Before you buy, pick your country on the product page. We'll show how many days it takes to reach you from our Shenzhen supply hub, on a live route map.",
+    body: "Before you buy, pick your country on the product page. Delivery is a maximum of 3–4 working days depending on your country and how early you place the order — see the live route on the map.",
   },
   {
     Icon: CreditCard,
@@ -32,7 +32,7 @@ const STEPS = [
   {
     Icon: Truck,
     title: "5. We fly it to you",
-    body: "Every order travels by air freight, not slow container ships — from our Shenzhen hub to your door in days, not weeks. A handful of countries aren't covered for direct delivery yet — see below for what happens there.",
+    body: "Every order travels by air freight, not slow container ships — a maximum of 3–4 working days depending on your country and what time of day you order. A handful of countries aren't covered for direct delivery yet — see below for what happens there.",
   },
   {
     Icon: ShieldCheck,
