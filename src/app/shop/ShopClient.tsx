@@ -126,7 +126,7 @@ export default function ShopClient({
 
       {/* Brand sub-filter row (shows brands within the chosen category) */}
       {brandsForCategory.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-signal/40">
+        <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-flash/50">
           <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
             Brand:
           </span>
@@ -134,7 +134,7 @@ export default function ShopClient({
             onClick={() => setBrand(null)}
             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
               brand === null
-                ? "bg-circuit text-paper border-circuit"
+                ? "bg-circuit text-white border-circuit"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -146,7 +146,7 @@ export default function ShopClient({
               onClick={() => setBrand(b)}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                 brand === b
-                  ? "bg-circuit text-paper border-circuit"
+                  ? "bg-circuit text-white border-circuit"
                   : "border-ink/20 hover:border-ink/50"
               }`}
             >
@@ -157,7 +157,7 @@ export default function ShopClient({
       )}
 
       {/* Condition filter: New / Refurbished / Used */}
-      <div className="flex flex-wrap gap-2 mb-3 pl-1 pr-14 border-l-2 border-circuit/40">
+      <div className="flex flex-wrap gap-2 mb-3 pl-1 pr-14 border-l-2 border-rust/40">
         <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
           Condition:
         </span>
@@ -165,7 +165,7 @@ export default function ShopClient({
           onClick={() => setCondition(null)}
           className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
             condition === null
-              ? "bg-ink text-paper border-ink"
+              ? "bg-rust text-white border-rust"
               : "border-ink/20 hover:border-ink/50"
           }`}
         >
@@ -177,7 +177,7 @@ export default function ShopClient({
             onClick={() => setCondition(condition === c ? null : c)}
             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
               condition === c
-                ? "bg-ink text-paper border-ink"
+                ? "bg-rust text-white border-rust"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -194,7 +194,7 @@ export default function ShopClient({
             onClick={() => setGrade(grade === g ? null : g)}
             className={`text-sm font-display px-3 py-1.5 rounded-full border transition-colors ${
               grade === g
-                ? "bg-ink text-paper border-ink"
+                ? "bg-flash text-white border-flash"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -206,7 +206,7 @@ export default function ShopClient({
           value={sort}
           onChange={(e) => setSort(e.target.value as SortMode)}
           aria-label="Sort products"
-          className="text-sm font-display border border-ink/20 rounded-full px-3 py-1.5 bg-transparent hover:border-ink/50 focus:outline-none focus:ring-2 focus:ring-circuit cursor-pointer"
+          className="text-sm font-display border border-ink/20 rounded-full px-3 py-1.5 bg-transparent hover:border-ink/50 focus:outline-none focus:ring-2 focus:ring-flash cursor-pointer"
         >
           <option value="best-grade">Best grade first</option>
           <option value="price-low">Price: low to high</option>
