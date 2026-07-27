@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCart } from "@/lib/cart-context";
 import { useAuth } from "@/lib/auth-context";
 import CurrencyPicker from "./CurrencyPicker";
+import MobileMenu from "./MobileMenu";
 
 export default function Header() {
   const { count } = useCart();
@@ -12,10 +13,13 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 bg-paper/90 backdrop-blur border-b border-ink/10">
       <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="font-display font-bold text-lg tracking-tight flex items-center gap-2 shrink-0">
-          <span className="w-2.5 h-2.5 rounded-full bg-signal inline-block" />
-          REBOOT<span className="text-wire">/MARKET</span>
-        </Link>
+        <div className="flex items-center gap-2 shrink-0">
+          <MobileMenu />
+          <Link href="/" className="font-display font-bold text-lg tracking-tight flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-signal inline-block" />
+            REBOOT<span className="text-wire">/MARKET</span>
+          </Link>
+        </div>
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium">
           <Link href="/shop" className="hover:text-circuit transition-colors">
             Shop
