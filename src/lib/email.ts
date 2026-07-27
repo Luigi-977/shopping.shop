@@ -107,3 +107,37 @@ export async function sendOrderConfirmationEmail(
     ),
   });
 }
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://shopping-shop-ashy.vercel.app";
+
+export async function sendReviewRequestEmail(
+  to: string,
+  orderId: string,
+  items: { name: string; slug: string }[],
+  customerName?: string | null
+) {
+  const greeting = customerName ? `Hi ${customerName},` : "Hi there,";
+  const links = items
+    .map(
+      (i) =>
+        `<li><a href="${SITE_URL}/product/${i.slug}" style="color:#3c7a5f;">${i.name}</a></li>`
+    )
+    .join("");
+
+  await sendEmail({
+    to,
+    subject: "How's your device? Leave a quick review",
+    html: shell(
+      "How's it going so far?",
+      `<p>${greeting}</p>
+       <p>It's been a few days since your order (#${orderId.slice(-8)}) arrived, and
+       we'd love to know what you think — good or honest-and-not-so-good, either
+       one helps other buyers make a better decision.</p>
+       <p>Takes under a minute:</p>
+       <ul style="color:#1f262c; font-size:14px; line-height:1.7;">
+         ${links}
+       </ul>
+       <p style="margin-top:20px;">Thanks for shopping with us!</p>`
+    ),
+  });
+}
