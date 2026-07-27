@@ -5,12 +5,18 @@ import type { Product } from "@prisma/client";
 import { Grade } from "@/lib/grading";
 import { useCurrency } from "@/lib/currency-context";
 import GradeBadge from "./GradeBadge";
+import Stars from "./Stars";
 
-export default function ProductCard({ product }: { product: Product }) {
+type ProductWithReviews = Product & { reviews?: { rating: number }[] };
+
+export default function ProductCard({ product }: { product: ProductWithReviews }) {
   const { format } = useCurrency();
   const discount = Math.round(
     (1 - product.price / product.originalPrice) * 100
   );
+  const reviews = product.reviews ?? [];
+  const avgRating =
+    reviews.length > 0 ? reviews.reduce((s, r) => s + r.rating, 0) / reviews.length : null;
 
   return (
     <Link
@@ -34,6 +40,11 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="absolute top-3 left-3">
           <GradeBadge grade={product.grade as Grade} size="sm" />
         </div>
+        {discount > 0 && (
+          <div className="absolute top-3 right-3 bg-flash text-white text-[11px] font-display font-bold rounded px-1.5 py-0.5 shadow-sm">
+            −{discount}%
+          </div>
+        )}
         {!product.inStock && (
           <div className="absolute inset-0 bg-paper/70 flex items-center justify-center">
             <span className="font-display text-xs font-bold uppercase bg-ink text-paper px-3 py-1.5 rounded">
@@ -42,27 +53,30 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
       </div>
-      <div className="p-4">
+      <div className="p-3">
         <div className="flex items-center gap-2 mb-1">
-          <p className="text-xs font-display uppercase tracking-wide text-wire">
+          <p className="text-[11px] font-display uppercase tracking-wide text-wire">
             {product.category}
           </p>
           <span className="text-[10px] font-display uppercase tracking-wide text-circuit border border-circuit/30 rounded px-1.5 py-0.5">
             {product.condition}
           </span>
         </div>
-        <h3 className="font-medium text-ink leading-snug mb-2 group-hover:underline decoration-signal decoration-2 underline-offset-2">
+        <h3 className="font-medium text-ink leading-snug mb-1.5 text-sm group-hover:underline decoration-flash decoration-2 underline-offset-2 line-clamp-2">
           {product.name}
         </h3>
-        <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="font-display font-extrabold text-lg text-ink">
+        {avgRating !== null && (
+          <div className="flex items-center gap-1 mb-1.5">
+            <Stars rating={avgRating} size={12} />
+            <span className="text-[11px] text-wire">({reviews.length})</span>
+          </div>
+        )}
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <span className="font-display font-extrabold text-base text-ink">
             {format(product.price)}
           </span>
-          <span className="text-sm text-wire line-through">
+          <span className="text-xs text-wire line-through">
             {format(product.originalPrice)}
-          </span>
-          <span className="text-[11px] font-display font-bold text-rust bg-rust/10 rounded px-1.5 py-0.5 ml-auto">
-            −{discount}%
           </span>
         </div>
       </div>

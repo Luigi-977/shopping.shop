@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Product } from "@prisma/client";
 import { Grade } from "@/lib/grading";
 import ProductCard from "@/components/ProductCard";
 
 type SortMode = "best-grade" | "price-low" | "price-high" | "newest";
+type ProductWithReviews = Product & { reviews?: { rating: number }[] };
 
 const GRADE_RANK: Record<string, number> = { A: 0, B: 1, C: 2 };
 
@@ -13,10 +15,15 @@ export default function ShopClient({
   products,
   categories,
 }: {
-  products: Product[];
+  products: ProductWithReviews[];
   categories: string[];
 }) {
-  const [category, setCategory] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  // Deep link from the homepage category strip: /shop?category=Laptops
+  const [category, setCategory] = useState<string | null>(() => {
+    const fromUrl = searchParams.get("category");
+    return fromUrl && categories.includes(fromUrl) ? fromUrl : null;
+  });
   const [brand, setBrand] = useState<string | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
   const [grade, setGrade] = useState<Grade | null>(null);
@@ -96,7 +103,7 @@ export default function ShopClient({
           onClick={() => pickCategory(null)}
           className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
             category === null
-              ? "bg-ink text-paper border-ink"
+              ? "bg-flash text-white border-flash"
               : "border-ink/20 hover:border-ink/50"
           }`}
         >
@@ -108,7 +115,7 @@ export default function ShopClient({
             onClick={() => pickCategory(c)}
             className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
               category === c
-                ? "bg-ink text-paper border-ink"
+                ? "bg-flash text-white border-flash"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >

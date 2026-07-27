@@ -61,7 +61,7 @@ export default function Header() {
             className="font-display text-sm border border-ink rounded-md px-3 py-1.5 flex items-center gap-2 hover:bg-ink hover:text-paper transition-colors"
           >
             Cart
-            <span className="bg-signal text-ink rounded-full min-w-5 h-5 px-1 text-xs flex items-center justify-center font-bold">
+            <span className="bg-flash text-white rounded-full min-w-5 h-5 px-1 text-xs flex items-center justify-center font-bold">
               {count}
             </span>
           </Link>

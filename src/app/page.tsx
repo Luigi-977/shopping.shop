@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
+import PromoCarousel from "@/components/PromoCarousel";
+import CategoryStrip from "@/components/CategoryStrip";
 
 export const revalidate = 60;
 
@@ -8,13 +10,27 @@ export default async function Home() {
   const featured = await prisma.product.findMany({
     where: { inStock: true },
     orderBy: { createdAt: "desc" },
-    take: 4,
+    take: 8,
+    include: { reviews: { where: { approved: true }, select: { rating: true } } },
   });
+  const categories = Array.from(
+    new Set((await prisma.product.findMany({ select: { category: true } })).map((p) => p.category))
+  );
 
   return (
     <>
+      {/* Promo carousel */}
+      <section className="max-w-6xl mx-auto px-5 pt-6">
+        <PromoCarousel />
+      </section>
+
+      {/* Category strip */}
+      <section className="max-w-6xl mx-auto px-5 pt-6">
+        <CategoryStrip categories={categories} />
+      </section>
+
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-5 pt-14 pb-16">
+      <section className="max-w-6xl mx-auto px-5 pt-10 pb-16">
         <div className="max-w-2xl">
           <p className="font-display text-xs uppercase tracking-widest text-circuit mb-4">
             Condition you can trust
@@ -32,7 +48,7 @@ export default async function Home() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/shop"
-              className="bg-ink text-paper font-display text-sm px-5 py-3 rounded-md hover:bg-ink-soft transition-colors"
+              className="bg-flash text-white font-display text-sm px-5 py-3 rounded-md hover:brightness-95 transition"
             >
               Browse the shop
             </Link>
@@ -65,19 +81,19 @@ export default async function Home() {
       <section className="bg-ink text-paper">
         <div className="max-w-6xl mx-auto px-5 py-10 grid sm:grid-cols-3 gap-8 font-display text-sm">
           <div>
-            <p className="text-signal mb-1">01</p>
+            <p className="text-flash mb-1">01</p>
             <p className="text-paper/70">
               40-point inspection on every device before listing
             </p>
           </div>
           <div>
-            <p className="text-signal mb-1">02</p>
+            <p className="text-flash mb-1">02</p>
             <p className="text-paper/70">
               60&ndash;180 day warranty, no exceptions
             </p>
           </div>
           <div>
-            <p className="text-signal mb-1">03</p>
+            <p className="text-flash mb-1">03</p>
             <p className="text-paper/70">
               Free returns within 14 days if it&rsquo;s not as graded
             </p>
