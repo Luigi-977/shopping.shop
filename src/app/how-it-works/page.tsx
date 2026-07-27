@@ -31,8 +31,8 @@ const STEPS = [
   },
   {
     Icon: Truck,
-    title: "5. We ship it",
-    body: "Most orders go straight to your door. A handful of countries aren't covered for direct delivery yet — see below for what happens there.",
+    title: "5. We fly it to you",
+    body: "Every order travels by air freight, not slow container ships — from our Shenzhen hub to your door in days, not weeks. A handful of countries aren't covered for direct delivery yet — see below for what happens there.",
   },
   {
     Icon: ShieldCheck,
@@ -84,9 +84,9 @@ export default function HowItWorksPage() {
         <p className="text-ink/80 leading-relaxed mb-4 max-w-xl">
           A small number of countries — currently Canada, Turkey, Tanzania and
           Uganda — aren&rsquo;t yet covered for courier delivery straight to a
-          customer&rsquo;s address. If you order from one of these, we&rsquo;ll
-          tell you at checkout, and your order is routed instead to your
-          nearest Reboot Market pickup point:
+          customer&rsquo;s address. Your order still flies over by air freight
+          the whole way — never sea shipping — but the last leg finishes at a
+          pickup point instead of your door:
         </p>
         <ul className="space-y-2 max-w-xl mb-4">
           <li className="flex items-start gap-2 text-ink/80">

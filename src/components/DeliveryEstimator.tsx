@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Clock, AlertTriangle, Store } from "lucide-react";
+import { MapPin, Clock, AlertTriangle, Store, Plane } from "lucide-react";
 import { COUNTRIES, HUBS, estimateDelivery, type DeliveryEstimate } from "@/lib/delivery";
 import ShippingMap from "@/components/ShippingMap";
 
@@ -25,6 +25,10 @@ export default function DeliveryEstimator() {
       <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3 flex items-center gap-1.5">
         <MapPin size={14} className="text-circuit" />
         Delivery estimate
+        <span className="ml-auto normal-case tracking-normal font-medium text-[11px] text-circuit bg-circuit-soft rounded-full px-2 py-0.5 flex items-center gap-1">
+          <Plane size={11} />
+          Shipped by air
+        </span>
       </h2>
 
       <select
@@ -50,16 +54,18 @@ export default function DeliveryEstimator() {
             <div className="flex items-start gap-2 bg-circuit-soft/60 border border-circuit/20 rounded-md px-4 py-3">
               <Clock size={16} className="text-circuit mt-0.5 shrink-0" />
               <p className="text-sm text-ink">
-                Delivers to your door in <span className="font-semibold">{result.etaDaysLow}–{result.etaDaysHigh} days</span> from
-                our {HUBS.shenzhen.name} supply hub.
+                Flown to your door by <span className="font-semibold">air freight</span> in{" "}
+                <span className="font-semibold">{result.etaDaysLow}–{result.etaDaysHigh} days</span> from
+                our {HUBS.shenzhen.name} supply hub — no slow sea shipping, no weeks-long wait.
               </p>
             </div>
           ) : (
             <div className="flex items-start gap-2 bg-signal/10 border border-signal/40 rounded-md px-4 py-3">
               <AlertTriangle size={16} className="text-signal mt-0.5 shrink-0" />
               <p className="text-sm text-ink">
-                Direct doorstep delivery isn&rsquo;t available in {result.country.name} yet. Your order will
-                be routed to our nearest {result.region === "Africa" ? "shop" : "regional hub"} —{" "}
+                Direct doorstep delivery isn&rsquo;t available in {result.country.name} yet. Your order
+                still travels by air, not sea, and will be routed to our nearest{" "}
+                {result.region === "Africa" ? "shop" : "regional hub"} —{" "}
                 <span className="font-semibold inline-flex items-center gap-1">
                   <Store size={13} className="text-circuit" />
                   {result.redirectHub?.name}

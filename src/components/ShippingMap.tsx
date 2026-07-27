@@ -5,7 +5,7 @@ import { geoOrthographic, geoPath, geoGraticule10, geoInterpolate } from "d3-geo
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
 import type { FeatureCollection, Geometry } from "geojson";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Plane } from "lucide-react";
 import landTopology from "@/lib/geo/land-110m.json";
 
 type Point = { name: string; lat: number; lon: number };
@@ -20,13 +20,6 @@ const land = feature(
 ) as unknown as FeatureCollection<Geometry>;
 
 const graticule = geoGraticule10();
-
-function routeLine(a: Point, b: Point) {
-  const interpolate = geoInterpolate([a.lon, a.lat], [b.lon, b.lat]);
-  const steps = 64;
-  const coords = Array.from({ length: steps + 1 }, (_, i) => interpolate(i / steps));
-  return { type: "LineString" as const, coordinates: coords };
-}
 
 export default function ShippingMap({
   origin,
@@ -68,12 +61,26 @@ export default function ShippingMap({
   const graticulePath = useMemo(() => path(graticule) ?? "", [path]);
   const spherePath = useMemo(() => path({ type: "Sphere" }) ?? "", [path]);
 
-  const routePath = useMemo(() => {
-    const legs = waypoint
-      ? [routeLine(origin, waypoint), routeLine(waypoint, destination)]
-      : [routeLine(origin, destination)];
-    return legs.map((l) => path(l) ?? "");
-  }, [origin, destination, waypoint, path]);
+  const routeInfo = useMemo(() => {
+    const legs: [Point, Point][] = waypoint
+      ? [
+          [origin, waypoint],
+          [waypoint, destination],
+        ]
+      : [[origin, destination]];
+
+    return legs.map(([a, b]) => {
+      const interpolate = geoInterpolate([a.lon, a.lat], [b.lon, b.lat]);
+      const steps = 64;
+      const coords = Array.from({ length: steps + 1 }, (_, i) => interpolate(i / steps));
+      const d = path({ type: "LineString" as const, coordinates: coords }) ?? "";
+      const midIdx = Math.floor(steps / 2);
+      const [mx, my] = projection(coords[midIdx]) ?? [0, 0];
+      const [nx, ny] = projection(coords[midIdx + 1]) ?? [mx, my];
+      const angle = (Math.atan2(ny - my, nx - mx) * 180) / Math.PI;
+      return { d, mid: [mx, my] as [number, number], angle };
+    });
+  }, [origin, destination, waypoint, path, projection]);
 
   const markers = useMemo(
     () => [
@@ -144,18 +151,27 @@ export default function ShippingMap({
         {/* sphere outline */}
         <path d={spherePath} fill="none" stroke="#3c7a5f" strokeOpacity={0.5} strokeWidth={1} />
 
-        {/* route arc(s) */}
-        {routePath.map((d, i) => (
-          <path
-            key={i}
-            d={d}
-            fill="none"
-            stroke={i === 0 ? "#ffb000" : "#9aa0a6"}
-            strokeWidth={2}
-            strokeDasharray="1 4"
-            strokeLinecap="round"
-            opacity={0.9}
-          />
+        {/* route arc(s), flown not shipped */}
+        {routeInfo.map(({ d, mid, angle }, i) => (
+          <g key={i}>
+            <path
+              d={d}
+              fill="none"
+              stroke={i === 0 ? "#ffb000" : "#9aa0a6"}
+              strokeWidth={2}
+              strokeDasharray="1 4"
+              strokeLinecap="round"
+              opacity={0.9}
+            />
+            <g transform={`translate(${mid[0]}, ${mid[1]}) rotate(${angle})`}>
+              <polygon
+                points="9,0 -6,-5 -2,0 -6,5"
+                fill={i === 0 ? "#ffb000" : "#9aa0a6"}
+                stroke="#0a1216"
+                strokeWidth={0.6}
+              />
+            </g>
+          </g>
         ))}
 
         {/* markers */}
@@ -196,7 +212,8 @@ export default function ShippingMap({
       )}
 
       <div className="px-3 py-2 border-t border-white/10 flex items-center justify-between text-[11px]">
-        <span className="text-paper/70">
+        <span className="text-paper/70 flex items-center gap-1.5">
+          <Plane size={12} className="text-signal shrink-0" />
           {origin.name} {waypoint ? `→ ${waypoint.name} → ` : "→"} {destination.name}
         </span>
         <span className="text-signal font-semibold">{etaLabel}</span>
