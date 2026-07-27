@@ -99,12 +99,15 @@ model ChatMessage {
 }
 
 model Review {
-  id         String   @id @default(cuid())
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId  String
-  authorName String
-  rating     Int      // 1-5
-  body       String
-  approved   Boolean  @default(true)
-  createdAt  DateTime @default(now())
+  id            String   @id @default(cuid())
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId     String
+  authorName    String
+  authorLocation String? // e.g. "Nairobi, Kenya" — shown next to the name
+  rating        Int      // 1-5
+  body          String
+  photoUrl      String?  // optional customer testimonial photo
+  videoUrl      String?  // optional customer testimonial video
+  approved      Boolean  @default(true)
+  createdAt     DateTime @default(now())
 }

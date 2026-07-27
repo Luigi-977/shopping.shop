@@ -180,8 +180,11 @@ export default async function ProductPage({
         initialReviews={reviews.map((r) => ({
           id: r.id,
           authorName: r.authorName,
+          authorLocation: r.authorLocation,
           rating: r.rating,
           body: r.body,
+          photoUrl: r.photoUrl,
+          videoUrl: r.videoUrl,
           createdAt: r.createdAt.toISOString(),
         }))}
       />

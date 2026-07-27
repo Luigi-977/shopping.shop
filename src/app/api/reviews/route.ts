@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
-  const { productId, rating, body, authorName } = await req.json();
+  const { productId, rating, body, authorName, authorLocation } = await req.json();
   const user = await getCurrentUser();
 
   if (!productId || !rating || !body) {
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   const name = (user?.name || authorName || "Anonymous").toString().slice(0, 60);
+  const location = authorLocation ? String(authorLocation).slice(0, 60) : null;
 
   const review = await prisma.review.create({
     data: {
@@ -22,6 +23,7 @@ export async function POST(req: NextRequest) {
       rating: r,
       body: String(body).slice(0, 1000),
       authorName: name,
+      authorLocation: location,
     },
   });
 

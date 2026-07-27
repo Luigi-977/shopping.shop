@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import Stars from "@/components/Stars";
+import { MapPin, Play } from "lucide-react";
 
 type Review = {
   id: string;
   authorName: string;
+  authorLocation?: string | null;
   rating: number;
   body: string;
+  photoUrl?: string | null;
+  videoUrl?: string | null;
   createdAt: string;
 };
 
@@ -22,6 +26,7 @@ export default function ReviewSection({
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
   const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -41,7 +46,7 @@ export default function ReviewSection({
     const res = await fetch("/api/reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ productId, rating, body, authorName: name }),
+      body: JSON.stringify({ productId, rating, body, authorName: name, authorLocation: location }),
     });
     const data = await res.json();
     setSubmitting(false);
@@ -53,14 +58,18 @@ export default function ReviewSection({
       {
         id: data.review.id,
         authorName: data.review.authorName,
+        authorLocation: data.review.authorLocation,
         rating: data.review.rating,
         body: data.review.body,
+        photoUrl: data.review.photoUrl,
+        videoUrl: data.review.videoUrl,
         createdAt: data.review.createdAt,
       },
       ...prev,
     ]);
     setBody("");
     setName("");
+    setLocation("");
     setShowForm(false);
   }
 
@@ -108,6 +117,12 @@ export default function ReviewSection({
             placeholder="Your name (optional)"
             className="w-full border border-ink/20 rounded-md px-3 py-2 text-sm bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
           />
+          <input
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Your city, country (optional)"
+            className="w-full border border-ink/20 rounded-md px-3 py-2 text-sm bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
@@ -134,11 +149,36 @@ export default function ReviewSection({
         <div className="space-y-5">
           {reviews.map((r) => (
             <div key={r.id} className="border-b border-ink/10 pb-5">
-              <div className="flex items-center gap-2 mb-1">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
                 <span className="font-medium text-sm">{r.authorName}</span>
+                {r.authorLocation && (
+                  <span className="flex items-center gap-0.5 text-xs text-wire">
+                    <MapPin size={11} className="text-circuit" />
+                    {r.authorLocation}
+                  </span>
+                )}
                 <Stars rating={r.rating} size={13} />
               </div>
               <p className="text-sm text-ink/80">{r.body}</p>
+              {r.photoUrl && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={r.photoUrl}
+                  alt={`Photo from ${r.authorName}`}
+                  className="mt-3 w-28 h-28 object-cover rounded-md border border-ink/10"
+                />
+              )}
+              {r.videoUrl && (
+                <a
+                  href={r.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-circuit border border-circuit/30 rounded-md px-3 py-1.5 hover:bg-circuit-soft"
+                >
+                  <Play size={12} />
+                  Watch customer video
+                </a>
+              )}
             </div>
           ))}
         </div>
