@@ -20,10 +20,18 @@ export function amountInCurrency(usd: number, code: CurrencyCode): number {
   return CURRENCIES[code].noDecimals ? Math.round(raw) : Math.round(raw * 100) / 100;
 }
 
-// Sandbox for testing, live for real money. Chosen by INTASEND_LIVE env flag.
+// Sandbox for testing, live for real money. We detect "live" from the key
+// itself (live keys contain "_live_") so it can't be misconfigured, and also
+// honour an explicit INTASEND_LIVE=true override.
+export function isLive(): boolean {
+  const pub = process.env.INTASEND_PUBLIC_KEY ?? "";
+  if (pub.includes("_live_")) return true;
+  if (pub.includes("_test_")) return false;
+  return process.env.INTASEND_LIVE === "true";
+}
+
 export function intasendCheckoutUrl(): string {
-  const live = process.env.INTASEND_LIVE === "true";
-  return live
+  return isLive()
     ? "https://payment.intasend.com/api/v1/checkout/"
     : "https://sandbox.intasend.com/api/v1/checkout/";
 }
