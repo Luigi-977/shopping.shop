@@ -86,12 +86,22 @@ export async function POST(req: NextRequest) {
 
   const data = await res.json();
   if (!res.ok || !data.url) {
+    // Surface IntaSend's actual reason in the server logs for debugging.
+    console.error("IntaSend checkout failed:", {
+      status: res.status,
+      response: data,
+      sent: { amount, currency: chargeCurrency, live: process.env.INTASEND_LIVE },
+    });
     await prisma.order.update({
       where: { id: order.id },
       data: { status: "cancelled" },
     });
     return NextResponse.json(
-      { error: "Could not start payment. Please try again." },
+      {
+        error: "Could not start payment. Please try again.",
+        // Include IntaSend's message so we can see it during setup.
+        detail: data?.detail || data?.message || data?.errors || "Unknown error",
+      },
       { status: 502 }
     );
   }
