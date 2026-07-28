@@ -88,7 +88,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       if (!res.ok) return { ok: false, error: data.error ?? "Checkout failed." };
 
       if (data.mode === "live" && data.link) {
-        // Hand off to Flutterwave's hosted checkout.
+        // Hand off to IntaSend hosted checkout.
         return { ok: true, mode: "live", link: data.link, orderId: data.orderId };
       }
 

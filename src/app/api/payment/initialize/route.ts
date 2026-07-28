@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth";
 import {
-  FLW_BASE,
-  flutterwaveSecret,
-  flutterwaveChargeCurrency,
+  intasendCheckoutUrl,
+  intasendPublicKey,
+  intasendChargeCurrency,
   amountInCurrency,
   paymentsConfigured,
-} from "@/lib/flutterwave";
+} from "@/lib/intasend";
 import { CurrencyCode } from "@/lib/currency";
 
 type LineInput = { slug: string; qty: number };
@@ -52,8 +52,8 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // ── Demo mode: no Flutterwave keys yet. Mark the order paid immediately so
-  // the whole flow is testable, and tell the client it was a demo. ──
+  // Demo mode: no IntaSend keys yet. Mark the order paid immediately so the
+  // whole flow is testable, and tell the client it was a demo.
   if (!paymentsConfigured()) {
     await prisma.order.update({
       where: { id: order.id },
@@ -62,33 +62,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ mode: "demo", orderId: order.id });
   }
 
-  // ── Live mode: ask Flutterwave for a hosted payment link. ──
-  const chargeCurrency = flutterwaveChargeCurrency(displayCurrency);
+  // Live mode: ask IntaSend for a hosted checkout link.
+  const chargeCurrency = intasendChargeCurrency(displayCurrency);
   const amount = amountInCurrency(totalUsd, chargeCurrency);
   const origin = req.nextUrl.origin;
+  const firstName = (user?.name || email.split("@")[0] || "Customer").slice(0, 40);
 
-  const res = await fetch(`${FLW_BASE}/payments`, {
+  const res = await fetch(intasendCheckoutUrl(), {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${flutterwaveSecret()}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      tx_ref: order.id,
+      public_key: intasendPublicKey(),
       amount,
       currency: chargeCurrency,
-      redirect_url: `${origin}/checkout/callback`,
-      customer: { email },
-      payment_options: "card,mpesa,mobilemoneyuganda,mobilemoneytanzania",
-      customizations: {
-        title: "Reboot Market",
-        description: "Second-hand electronics, graded and warrantied",
-      },
+      email,
+      first_name: firstName,
+      last_name: "",
+      api_ref: order.id,
+      redirect_url: `${origin}/checkout/callback?order=${order.id}`,
+      comment: "Reboot Market - refurbished electronics",
     }),
   });
 
   const data = await res.json();
-  if (data.status !== "success" || !data.data?.link) {
+  if (!res.ok || !data.url) {
     await prisma.order.update({
       where: { id: order.id },
       data: { status: "cancelled" },
@@ -99,5 +96,5 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ mode: "live", link: data.data.link, orderId: order.id });
+  return NextResponse.json({ mode: "live", link: data.url, orderId: order.id });
 }

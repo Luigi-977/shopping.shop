@@ -32,7 +32,7 @@ export default function CartPage() {
       return;
     }
     if (result.mode === "live") {
-      // Redirect to Flutterwave's hosted card/M-Pesa checkout.
+      // Redirect to IntaSend hosted card/M-Pesa checkout.
       window.location.href = result.link;
       return;
     }
@@ -51,7 +51,7 @@ export default function CartPage() {
         </p>
         <p className="text-wire mb-8 text-sm">
           This is a demo checkout — no real payment was taken. Once your
-          Flutterwave keys are added, this same button will charge cards and
+          IntaSend keys are added, this same button will charge cards and
           M-Pesa for real.
         </p>
         <Link

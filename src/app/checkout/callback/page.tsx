@@ -8,36 +8,53 @@ import { useCart } from "@/lib/cart-context";
 function CallbackInner() {
   const params = useSearchParams();
   const { clear } = useCart();
-  const [state, setState] = useState<"checking" | "success" | "failed">("checking");
+  const [state, setState] = useState<"checking" | "success" | "pending" | "failed">("checking");
   const [orderId, setOrderId] = useState<string | null>(null);
 
   useEffect(() => {
-    // Flutterwave returns: status, tx_ref (our order id), transaction_id
-    const status = params.get("status");
-    const txRef = params.get("tx_ref");
-    const transactionId = params.get("transaction_id");
-    setOrderId(txRef);
+    // We pass ?order=<id> in the redirect_url. IntaSend may also append its own
+    // params, but our order id is the reliable reference.
+    const order = params.get("order");
+    setOrderId(order);
 
-    if (status === "cancelled" || !txRef) {
+    if (!order) {
       setState("failed");
       return;
     }
 
-    fetch("/api/payment/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ transactionId, orderId: txRef }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.ok && data.status === "paid") {
+    let attempts = 0;
+    let timer: ReturnType<typeof setInterval>;
+
+    async function check() {
+      attempts++;
+      try {
+        const r = await fetch("/api/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: order }),
+        });
+        const data = await r.json();
+        if (data.status === "paid") {
           clear();
           setState("success");
-        } else {
-          setState("failed");
+          clearInterval(timer);
+        } else if (attempts >= 6) {
+          // After ~18s with no webhook confirmation, show pending (not failure)
+          // because M-Pesa can take a moment; the webhook will still confirm it.
+          setState("pending");
+          clearInterval(timer);
         }
-      })
-      .catch(() => setState("failed"));
+      } catch {
+        if (attempts >= 6) {
+          setState("pending");
+          clearInterval(timer);
+        }
+      }
+    }
+
+    check();
+    timer = setInterval(check, 3000);
+    return () => clearInterval(timer);
   }, [params, clear]);
 
   if (state === "checking") {
@@ -58,13 +75,35 @@ function CallbackInner() {
           <p className="text-wire mb-2">Order #{orderId.slice(-8)} is confirmed and paid.</p>
         )}
         <p className="text-wire mb-8 text-sm">
-          You&rsquo;ll get a confirmation by email. Thank you!
+          You&rsquo;ll get a confirmation by email asking for your delivery details. Thank you!
         </p>
         <Link
           href="/shop"
           className="inline-block bg-ink text-paper font-display text-sm px-5 py-3 rounded-md"
         >
           Continue shopping
+        </Link>
+      </div>
+    );
+  }
+
+  if (state === "pending") {
+    return (
+      <div className="max-w-xl mx-auto px-5 py-24 text-center">
+        <p className="text-5xl mb-6">⏳</p>
+        <h1 className="text-2xl font-medium mb-3">Finalising your payment</h1>
+        {orderId && (
+          <p className="text-wire mb-2">Order #{orderId.slice(-8)}</p>
+        )}
+        <p className="text-wire mb-8 text-sm">
+          If you completed the M-Pesa or card payment, it&rsquo;s being confirmed and
+          you&rsquo;ll get an email shortly. You can check your account for the latest status.
+        </p>
+        <Link
+          href="/account"
+          className="inline-block bg-ink text-paper font-display text-sm px-5 py-3 rounded-md"
+        >
+          View my orders
         </Link>
       </div>
     );
