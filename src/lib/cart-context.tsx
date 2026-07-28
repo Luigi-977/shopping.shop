@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import type { Product } from "@prisma/client";
 
 type CartLine = { product: Product; qty: number };
@@ -27,6 +27,7 @@ const STORAGE_KEY = "reboot-market-cart";
 export function CartProvider({ children }: { children: ReactNode }) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [hydrated, setHydrated] = useState(false);
+  const refreshedRef = useRef(false);
 
   useEffect(() => {
     try {
@@ -37,6 +38,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
     setHydrated(true);
   }, []);
+
+  // The cart stores a snapshot of each product at the moment it was added.
+  // That snapshot can go stale (a photo gets uploaded later, a price
+  // changes, it goes out of stock) and localStorage keeps it around
+  // indefinitely. So every time the cart provider mounts — every page
+  // load, for as long as this browser tab/session is open — refresh each
+  // line against the live product record.
+  useEffect(() => {
+    if (!hydrated || refreshedRef.current) return;
+    refreshedRef.current = true;
+    if (lines.length === 0) return;
+    (async () => {
+      const results = await Promise.all(
+        lines.map(async (l) => {
+          try {
+            const res = await fetch(`/api/products/${encodeURIComponent(l.product.slug)}`);
+            if (!res.ok) return l;
+            const data = await res.json();
+            if (!data.product) return l;
+            return { product: data.product as Product, qty: l.qty };
+          } catch {
+            return l;
+          }
+        })
+      );
+      setLines(results);
+    })();
+  }, [hydrated, lines]);
 
   useEffect(() => {
     if (!hydrated) return;

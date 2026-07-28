@@ -84,48 +84,74 @@ export default function CartPage() {
       <h1 className="text-2xl font-medium mb-8">Your cart</h1>
 
       <div className="divide-y divide-ink/10 border-y border-ink/10">
-        {lines.map(({ product, qty }) => (
-          <div key={product.slug} className="py-5 flex items-center gap-4">
-            <div className="w-16 h-16 rounded-md bg-ink/[0.03] flex items-center justify-center text-3xl shrink-0">
-              {product.image}
-            </div>
-            <div className="flex-1 min-w-0">
-              <Link href={`/product/${product.slug}`} className="font-medium hover:underline">
-                {product.name}
+        {lines.map(({ product, qty }) => {
+          const photo = (product.imageUrls && product.imageUrls[0]) || product.imageUrl;
+          return (
+            <div key={product.slug} className="py-5 flex gap-4">
+              <Link
+                href={`/product/${product.slug}`}
+                className="w-24 h-24 rounded-md bg-ink/[0.03] border border-ink/10 flex items-center justify-center text-3xl shrink-0 overflow-hidden"
+              >
+                {photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={photo} alt={product.name} className="w-full h-full object-cover" />
+                ) : (
+                  product.image
+                )}
               </Link>
-              <div className="mt-1">
-                <GradeBadge grade={product.grade as Grade} size="sm" />
+
+              <div className="flex-1 min-w-0 flex flex-col justify-between">
+                <div>
+                  <Link href={`/product/${product.slug}`} className="font-medium leading-snug hover:underline">
+                    {product.name}
+                  </Link>
+                  <div className="flex items-center gap-2 mt-1.5">
+                    <GradeBadge grade={product.grade as Grade} size="sm" />
+                    <span className="text-xs text-wire">{product.condition}</span>
+                  </div>
+                  <p className="text-xs text-circuit mt-1">In stock</p>
+                </div>
+
+                <div className="flex items-end justify-between mt-3 gap-3">
+                  <div className="inline-flex items-center border border-ink/20 rounded-md overflow-hidden">
+                    <button
+                      onClick={() => setQty(product.slug, qty - 1)}
+                      className="w-8 h-8 flex items-center justify-center hover:bg-ink/[0.04] text-lg leading-none"
+                      aria-label="Decrease quantity"
+                    >
+                      −
+                    </button>
+                    <span className="w-8 text-center font-display text-sm border-x border-ink/20 h-8 flex items-center justify-center">
+                      {qty}
+                    </span>
+                    <button
+                      onClick={() => setQty(product.slug, qty + 1)}
+                      className="w-8 h-8 flex items-center justify-center hover:bg-ink/[0.04] text-lg leading-none"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => remove(product.slug)}
+                    className="text-xs text-wire hover:text-rust underline underline-offset-2"
+                    aria-label={`Remove ${product.name}`}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-right shrink-0">
+                <p className="font-display font-bold">{format(product.price * qty)}</p>
+                {qty > 1 && (
+                  <p className="text-xs text-wire mt-0.5">{format(product.price)} each</p>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setQty(product.slug, qty - 1)}
-                className="w-7 h-7 border border-ink/20 rounded flex items-center justify-center hover:border-ink"
-                aria-label="Decrease quantity"
-              >
-                −
-              </button>
-              <span className="w-6 text-center font-display">{qty}</span>
-              <button
-                onClick={() => setQty(product.slug, qty + 1)}
-                className="w-7 h-7 border border-ink/20 rounded flex items-center justify-center hover:border-ink"
-                aria-label="Increase quantity"
-              >
-                +
-              </button>
-            </div>
-            <span className="font-display font-bold w-16 text-right">
-              {format(product.price * qty)}
-            </span>
-            <button
-              onClick={() => remove(product.slug)}
-              className="text-wire hover:text-rust text-sm ml-2"
-              aria-label={`Remove ${product.name}`}
-            >
-              Remove
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="flex justify-between items-center mt-6 mb-6">

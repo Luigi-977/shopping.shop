@@ -9,6 +9,7 @@ import PriceBlock from "./PriceBlock";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
+import DeliveryEstimator from "@/components/DeliveryEstimator";
 
 export const revalidate = 60;
 
@@ -121,6 +122,8 @@ export default async function ProductPage({
 
           <AskAboutItem productName={product.name} grade={product.grade} />
 
+          <DeliveryEstimator />
+
           {product.description && (
             <div className="mt-6 border-t border-ink/10 pt-6">
               <h2 className="font-display text-xs uppercase tracking-wide text-wire mb-3">
@@ -177,8 +180,11 @@ export default async function ProductPage({
         initialReviews={reviews.map((r) => ({
           id: r.id,
           authorName: r.authorName,
+          authorLocation: r.authorLocation,
           rating: r.rating,
           body: r.body,
+          photoUrl: r.photoUrl,
+          videoUrl: r.videoUrl,
           createdAt: r.createdAt.toISOString(),
         }))}
       />

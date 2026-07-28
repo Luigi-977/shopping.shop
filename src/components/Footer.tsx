@@ -34,6 +34,11 @@ export default function Footer() {
             <p className="font-display text-xs uppercase text-ink mb-2">Company</p>
             <ul className="space-y-1">
               <li>
+                <Link href="/how-it-works" className="hover:text-circuit transition-colors">
+                  How it works
+                </Link>
+              </li>
+              <li>
                 <Link href="/about" className="hover:text-circuit transition-colors">
                   About us
                 </Link>

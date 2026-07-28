@@ -1,11 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import type { Product } from "@prisma/client";
 import { Grade } from "@/lib/grading";
 import ProductCard from "@/components/ProductCard";
 
 type SortMode = "best-grade" | "price-low" | "price-high" | "newest";
+type ProductWithReviews = Product & { reviews?: { rating: number }[] };
 
 const GRADE_RANK: Record<string, number> = { A: 0, B: 1, C: 2 };
 
@@ -13,10 +15,15 @@ export default function ShopClient({
   products,
   categories,
 }: {
-  products: Product[];
+  products: ProductWithReviews[];
   categories: string[];
 }) {
-  const [category, setCategory] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  // Deep link from the homepage category strip: /shop?category=Laptops
+  const [category, setCategory] = useState<string | null>(() => {
+    const fromUrl = searchParams.get("category");
+    return fromUrl && categories.includes(fromUrl) ? fromUrl : null;
+  });
   const [brand, setBrand] = useState<string | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
   const [grade, setGrade] = useState<Grade | null>(null);
@@ -78,7 +85,7 @@ export default function ShopClient({
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-5 py-10">
+    <div className="max-w-6xl mx-auto px-5 pt-10 pb-28">
       <h1 className="text-2xl font-medium mb-1">Shop</h1>
       <p className="text-wire mb-4">{filtered.length} devices in stock</p>
 
@@ -96,7 +103,7 @@ export default function ShopClient({
           onClick={() => pickCategory(null)}
           className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
             category === null
-              ? "bg-ink text-paper border-ink"
+              ? "bg-flash text-white border-flash"
               : "border-ink/20 hover:border-ink/50"
           }`}
         >
@@ -108,7 +115,7 @@ export default function ShopClient({
             onClick={() => pickCategory(c)}
             className={`text-sm px-3 py-1.5 rounded-full border transition-colors ${
               category === c
-                ? "bg-ink text-paper border-ink"
+                ? "bg-flash text-white border-flash"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -119,7 +126,7 @@ export default function ShopClient({
 
       {/* Brand sub-filter row (shows brands within the chosen category) */}
       {brandsForCategory.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-signal/40">
+        <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-flash/50">
           <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
             Brand:
           </span>
@@ -127,7 +134,7 @@ export default function ShopClient({
             onClick={() => setBrand(null)}
             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
               brand === null
-                ? "bg-circuit text-paper border-circuit"
+                ? "bg-circuit text-white border-circuit"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -139,7 +146,7 @@ export default function ShopClient({
               onClick={() => setBrand(b)}
               className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
                 brand === b
-                  ? "bg-circuit text-paper border-circuit"
+                  ? "bg-circuit text-white border-circuit"
                   : "border-ink/20 hover:border-ink/50"
               }`}
             >
@@ -150,7 +157,7 @@ export default function ShopClient({
       )}
 
       {/* Condition filter: New / Refurbished / Used */}
-      <div className="flex flex-wrap gap-2 mb-3 pl-1 border-l-2 border-circuit/40">
+      <div className="flex flex-wrap gap-2 mb-3 pl-1 pr-14 border-l-2 border-rust/40">
         <span className="text-xs font-display uppercase text-wire self-center pl-1 pr-1">
           Condition:
         </span>
@@ -158,7 +165,7 @@ export default function ShopClient({
           onClick={() => setCondition(null)}
           className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
             condition === null
-              ? "bg-ink text-paper border-ink"
+              ? "bg-rust text-white border-rust"
               : "border-ink/20 hover:border-ink/50"
           }`}
         >
@@ -170,7 +177,7 @@ export default function ShopClient({
             onClick={() => setCondition(condition === c ? null : c)}
             className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
               condition === c
-                ? "bg-ink text-paper border-ink"
+                ? "bg-rust text-white border-rust"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -180,14 +187,14 @@ export default function ShopClient({
       </div>
 
       {/* Grade + sort row */}
-      <div className="flex flex-wrap items-center gap-2 mb-8">
+      <div className="flex flex-wrap items-center gap-2 mb-8 pl-1 pr-14">
         {(["A", "B", "C"] as Grade[]).map((g) => (
           <button
             key={g}
             onClick={() => setGrade(grade === g ? null : g)}
             className={`text-sm font-display px-3 py-1.5 rounded-full border transition-colors ${
               grade === g
-                ? "bg-ink text-paper border-ink"
+                ? "bg-flash text-white border-flash"
                 : "border-ink/20 hover:border-ink/50"
             }`}
           >
@@ -199,7 +206,7 @@ export default function ShopClient({
           value={sort}
           onChange={(e) => setSort(e.target.value as SortMode)}
           aria-label="Sort products"
-          className="text-sm font-display border border-ink/20 rounded-full px-3 py-1.5 bg-transparent hover:border-ink/50 focus:outline-none focus:ring-2 focus:ring-circuit cursor-pointer"
+          className="text-sm font-display border border-ink/20 rounded-full px-3 py-1.5 bg-transparent hover:border-ink/50 focus:outline-none focus:ring-2 focus:ring-flash cursor-pointer"
         >
           <option value="best-grade">Best grade first</option>
           <option value="price-low">Price: low to high</option>
