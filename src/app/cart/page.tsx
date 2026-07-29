@@ -14,6 +14,7 @@ export default function CartPage() {
   const { user } = useAuth();
   const { format, currency } = useCurrency();
   const [email, setEmail] = useState("");
+  const [fullName, setFullName] = useState("");
   const [country, setCountry] = useState("KE");
   const [region, setRegion] = useState("");
   const [town, setTown] = useState("");
@@ -33,6 +34,10 @@ export default function CartPage() {
       setError("Please choose your country and region, and enter your town/area.");
       return;
     }
+    if (!fullName.trim()) {
+      setError("Please enter your name for delivery.");
+      return;
+    }
     if (!phone.trim()) {
       setError("Please enter a phone number for delivery.");
       return;
@@ -40,6 +45,7 @@ export default function CartPage() {
     setError(null);
     setLoading(true);
     const result = await checkout(checkoutEmail, currency, {
+      name: fullName.trim(),
       country,
       region,
       town: town.trim(),
@@ -185,6 +191,16 @@ export default function CartPage() {
       {/* Delivery location — collected before payment */}
       <div className="mb-6 border border-ink/10 rounded-lg p-4">
         <p className="font-display text-sm font-bold mb-3">Where should we deliver?</p>
+        <div className="mb-3">
+          <label className="block text-xs font-medium mb-1" htmlFor="fullname">Your name</label>
+          <input
+            id="fullname"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="e.g. Bryson Gitonga"
+            className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
+        </div>
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <label className="block text-xs font-medium mb-1" htmlFor="country">Country</label>

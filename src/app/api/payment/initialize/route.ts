@@ -72,7 +72,12 @@ export async function POST(req: NextRequest) {
   const chargeCurrency = intasendChargeCurrency(displayCurrency);
   const amount = amountInCurrency(totalUsd, chargeCurrency);
   const origin = req.nextUrl.origin;
-  const firstName = (user?.name || email.split("@")[0] || "Customer").slice(0, 40);
+  // Prefer the name the customer typed at checkout, then their account name,
+  // then a sensible fallback. Split into first/last for IntaSend.
+  const fullName = (delivery.name || user?.name || "").trim();
+  const nameParts = fullName.split(/\s+/).filter(Boolean);
+  const firstName = (nameParts[0] || email.split("@")[0] || "Customer").slice(0, 40);
+  const lastName = (nameParts.slice(1).join(" ") || "").slice(0, 40);
 
   const res = await fetch(intasendCheckoutUrl(), {
     method: "POST",
@@ -83,7 +88,7 @@ export async function POST(req: NextRequest) {
       currency: chargeCurrency,
       email,
       first_name: firstName,
-      last_name: "Customer",
+      last_name: lastName,
       country: "KE",
       host: origin,
       api_ref: order.id,

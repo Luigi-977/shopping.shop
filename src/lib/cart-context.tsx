@@ -6,6 +6,7 @@ import type { Product } from "@prisma/client";
 type CartLine = { product: Product; qty: number };
 
 export type DeliveryDetails = {
+  name: string;
   country: string;
   region: string;
   town: string;
