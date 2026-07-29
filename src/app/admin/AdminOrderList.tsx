@@ -7,6 +7,11 @@ type Item = { id: string; name: string; image: string; qty: number; lineTotal: n
 type Order = {
   id: string;
   email: string;
+  deliveryCountry?: string | null;
+  deliveryRegion?: string | null;
+  deliveryTown?: string | null;
+  deliveryLandmark?: string | null;
+  deliveryPhone?: string | null;
   status: string;
   total: number;
   createdAt: string;
@@ -102,6 +107,23 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
               </div>
             ))}
           </div>
+
+          {(order.deliveryTown || order.deliveryPhone) && (
+            <div className="mb-3 text-xs bg-signal/10 border border-signal/30 rounded-md p-2.5">
+              <p className="font-display font-bold uppercase text-[10px] text-wire mb-1">Deliver to</p>
+              <p>
+                {[order.deliveryTown, order.deliveryRegion, order.deliveryCountry]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+              {order.deliveryLandmark && (
+                <p className="text-wire">Landmark: {order.deliveryLandmark}</p>
+              )}
+              {order.deliveryPhone && (
+                <p className="text-wire">Phone: {order.deliveryPhone}</p>
+              )}
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-2">
             {order.status === "paid" && (

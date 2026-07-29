@@ -7,12 +7,18 @@ import { useCurrency } from "@/lib/currency-context";
 import { useAuth } from "@/lib/auth-context";
 import GradeBadge from "@/components/GradeBadge";
 import { Grade } from "@/lib/grading";
+import { COUNTRIES, regionsFor } from "@/lib/locations";
 
 export default function CartPage() {
   const { lines, remove, setQty, subtotal, checkout } = useCart();
   const { user } = useAuth();
   const { format, currency } = useCurrency();
   const [email, setEmail] = useState("");
+  const [country, setCountry] = useState("KE");
+  const [region, setRegion] = useState("");
+  const [town, setTown] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [phone, setPhone] = useState("");
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,9 +29,23 @@ export default function CartPage() {
       setError("Enter an email so we can send your order confirmation.");
       return;
     }
+    if (!country || !region || !town.trim()) {
+      setError("Please choose your country and region, and enter your town/area.");
+      return;
+    }
+    if (!phone.trim()) {
+      setError("Please enter a phone number for delivery.");
+      return;
+    }
     setError(null);
     setLoading(true);
-    const result = await checkout(checkoutEmail, currency);
+    const result = await checkout(checkoutEmail, currency, {
+      country,
+      region,
+      town: town.trim(),
+      landmark: landmark.trim(),
+      phone: phone.trim(),
+    });
     if (!result.ok) {
       setLoading(false);
       setError(result.error);
@@ -159,6 +179,71 @@ export default function CartPage() {
         <div className="text-right">
           <p className="text-sm text-wire mb-1">Subtotal</p>
           <p className="font-display font-bold text-2xl">{format(subtotal)}</p>
+        </div>
+      </div>
+
+      {/* Delivery location — collected before payment */}
+      <div className="mb-6 border border-ink/10 rounded-lg p-4">
+        <p className="font-display text-sm font-bold mb-3">Where should we deliver?</p>
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <label className="block text-xs font-medium mb-1" htmlFor="country">Country</label>
+            <select
+              id="country"
+              value={country}
+              onChange={(e) => { setCountry(e.target.value); setRegion(""); }}
+              className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium mb-1" htmlFor="region">County / Region</label>
+            <select
+              id="region"
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+            >
+              <option value="">Select…</option>
+              {regionsFor(country).map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="mb-3">
+          <label className="block text-xs font-medium mb-1" htmlFor="town">Town / Area</label>
+          <input
+            id="town"
+            value={town}
+            onChange={(e) => setTown(e.target.value)}
+            placeholder="e.g. Maua"
+            className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
+        </div>
+        <div className="mb-3">
+          <label className="block text-xs font-medium mb-1" htmlFor="landmark">Landmark / delivery notes <span className="text-wire font-normal">(optional)</span></label>
+          <input
+            id="landmark"
+            value={landmark}
+            onChange={(e) => setLandmark(e.target.value)}
+            placeholder="e.g. near the market, opposite the chemist"
+            className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium mb-1" htmlFor="phone">Phone number</label>
+          <input
+            id="phone"
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="07xx xxx xxx"
+            className="w-full border border-ink/20 rounded-md px-3 py-2.5 bg-white/40 focus:outline-none focus:ring-2 focus:ring-circuit"
+          />
         </div>
       </div>
 

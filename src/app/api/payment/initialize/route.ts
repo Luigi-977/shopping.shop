@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
   const lines: LineInput[] = body.lines ?? [];
   const email: string | undefined = body.email ?? user?.email;
   const displayCurrency: CurrencyCode = body.currency ?? "USD";
+  const delivery = body.delivery ?? {};
 
   if (!email) {
     return NextResponse.json({ error: "An email is required." }, { status: 400 });
@@ -48,6 +49,11 @@ export async function POST(req: NextRequest) {
       email,
       total: totalUsd,
       status: "pending",
+      deliveryCountry: delivery.country || null,
+      deliveryRegion: delivery.region || null,
+      deliveryTown: delivery.town || null,
+      deliveryLandmark: delivery.landmark || null,
+      deliveryPhone: delivery.phone || null,
       items: { create: items },
     },
   });

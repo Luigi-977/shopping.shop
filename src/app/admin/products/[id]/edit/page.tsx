@@ -40,6 +40,7 @@ export default async function EditProductPage({
         imageUrls: product.imageUrls ?? [],
         image: product.image,
         inStock: product.inStock,
+        stockCount: product.stockCount,
       }}
     />
   );

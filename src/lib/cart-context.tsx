@@ -5,6 +5,14 @@ import type { Product } from "@prisma/client";
 
 type CartLine = { product: Product; qty: number };
 
+export type DeliveryDetails = {
+  country: string;
+  region: string;
+  town: string;
+  landmark: string;
+  phone: string;
+};
+
 type CheckoutResult =
   | { ok: true; mode: "demo"; orderId: string }
   | { ok: true; mode: "live"; link: string; orderId: string }
@@ -18,7 +26,7 @@ type CartContextType = {
   clear: () => void;
   count: number;
   subtotal: number;
-  checkout: (email: string, currency: string) => Promise<CheckoutResult>;
+  checkout: (email: string, currency: string, delivery: DeliveryDetails) => Promise<CheckoutResult>;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -101,7 +109,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   async function checkout(
     email: string,
-    currency: string
+    currency: string,
+    delivery: DeliveryDetails
   ): Promise<CheckoutResult> {
     try {
       const res = await fetch("/api/payment/initialize", {
@@ -110,6 +119,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({
           email,
           currency,
+          delivery,
           lines: lines.map((l) => ({ slug: l.product.slug, qty: l.qty })),
         }),
       });

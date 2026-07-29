@@ -102,6 +102,11 @@ export default async function AdminPage() {
         orders={orders.map((order) => ({
           id: order.id,
           email: order.email,
+          deliveryCountry: order.deliveryCountry,
+          deliveryRegion: order.deliveryRegion,
+          deliveryTown: order.deliveryTown,
+          deliveryLandmark: order.deliveryLandmark,
+          deliveryPhone: order.deliveryPhone,
           status: order.status,
           total: order.total,
           createdAt: order.createdAt.toISOString(),

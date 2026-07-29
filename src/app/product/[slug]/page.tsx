@@ -109,6 +109,14 @@ export default async function ProductPage({
 
           <PriceBlock price={product.price} originalPrice={product.originalPrice} />
 
+          {product.inStock &&
+            typeof product.stockCount === "number" &&
+            product.stockCount > 0 &&
+            product.stockCount <= 5 && (
+              <p className="font-display font-bold text-sm text-rust mb-2">
+                🔥 Only {product.stockCount} left in stock
+              </p>
+            )}
           {product.inStock ? (
             <AddToCart product={product} />
           ) : (

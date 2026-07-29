@@ -40,6 +40,7 @@ model Product {
   imageUrl      String?
   imageUrls     String[]
   inStock       Boolean     @default(true)
+  stockCount    Int?
   orderItems    OrderItem[]
   reviews       Review[]
   createdAt     DateTime    @default(now())
@@ -52,6 +53,11 @@ model Order {
   email               String
   status              String      @default("pending") // pending | paid | shipped | cancelled
   total               Int
+  deliveryCountry     String?
+  deliveryRegion      String?
+  deliveryTown        String?
+  deliveryLandmark    String?
+  deliveryPhone       String?
   items               OrderItem[]
   reviewRequestSentAt DateTime?
   createdAt           DateTime    @default(now())

@@ -35,6 +35,7 @@ type ProductForm = {
   imageUrls: string[];
   image: string;
   inStock: boolean;
+  stockCount: number | null;
 };
 
 export default function EditProductForm({ product }: { product: ProductForm }) {
@@ -96,6 +97,7 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         refurbDetails: form.get("refurbDetails"),
         gradeNotes: form.get("gradeNotes"),
         inStock: form.get("inStock") === "on",
+        stockCount: form.get("stockCount"),
         imageUrls,
       }),
     });
@@ -248,6 +250,21 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
             />
             <span className="text-sm font-medium">In stock (uncheck to mark sold out)</span>
           </label>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1.5" htmlFor="stockCount">
+            Stock quantity <span className="text-wire font-normal">(shows &ldquo;Only X left&rdquo; when 5 or fewer; leave blank to hide)</span>
+          </label>
+          <input
+            id="stockCount"
+            name="stockCount"
+            type="number"
+            min={0}
+            defaultValue={product.stockCount ?? ""}
+            placeholder="e.g. 3"
+            className={inputClass}
+          />
         </div>
 
         {error && <p className="text-sm text-rust">{error}</p>}

@@ -79,6 +79,14 @@ export default function ProductCard({ product }: { product: ProductWithReviews }
             {format(product.originalPrice)}
           </span>
         </div>
+        {product.inStock &&
+          typeof product.stockCount === "number" &&
+          product.stockCount > 0 &&
+          product.stockCount <= 5 && (
+            <p className="text-[11px] font-display font-bold text-rust mt-1.5">
+              Only {product.stockCount} left
+            </p>
+          )}
       </div>
     </Link>
   );
