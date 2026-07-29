@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Shop — Reboot Market",
 };
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function ShopPage() {
   const products = await prisma.product.findMany({

@@ -75,7 +75,7 @@ export default function NewProductForm() {
       setError(data.error ?? "Could not save product.");
       return;
     }
-    router.push("/shop");
+    router.push("/admin/products");
   }
 
   const inputClass =
