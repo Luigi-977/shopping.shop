@@ -30,6 +30,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     setUser(null);
+    // Hard-navigate home so no cached authenticated state or page remains.
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
   }
 
   useEffect(() => {

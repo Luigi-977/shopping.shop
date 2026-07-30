@@ -60,6 +60,71 @@ export const COUNTRIES: Country[] = [
     name: "Ethiopia",
     regions: ["Addis Ababa", "Oromia", "Amhara", "Tigray", "Other"],
   },
+  {
+    code: "SO",
+    name: "Somalia",
+    regions: ["Banaadir (Mogadishu)", "Puntland", "Somaliland", "Other"],
+  },
+  {
+    code: "NG",
+    name: "Nigeria",
+    regions: ["Lagos", "Abuja (FCT)", "Kano", "Rivers", "Oyo", "Other"],
+  },
+  {
+    code: "GH",
+    name: "Ghana",
+    regions: ["Greater Accra", "Ashanti", "Western", "Northern", "Other"],
+  },
+  {
+    code: "ZA",
+    name: "South Africa",
+    regions: ["Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Other"],
+  },
+  {
+    code: "ZM",
+    name: "Zambia",
+    regions: ["Lusaka", "Copperbelt", "Southern", "Other"],
+  },
+  {
+    code: "ZW",
+    name: "Zimbabwe",
+    regions: ["Harare", "Bulawayo", "Manicaland", "Other"],
+  },
+  {
+    code: "MW",
+    name: "Malawi",
+    regions: ["Lilongwe", "Blantyre", "Mzuzu", "Other"],
+  },
+  {
+    code: "DRC",
+    name: "DR Congo",
+    regions: ["Kinshasa", "Lubumbashi", "Goma", "Other"],
+  },
+  {
+    code: "EG",
+    name: "Egypt",
+    regions: ["Cairo", "Alexandria", "Giza", "Other"],
+  },
+  {
+    code: "GB",
+    name: "United Kingdom",
+    regions: ["England", "Scotland", "Wales", "Northern Ireland"],
+  },
+  {
+    code: "US",
+    name: "United States",
+    regions: ["Other"],
+  },
+  {
+    code: "AE",
+    name: "United Arab Emirates",
+    regions: ["Dubai", "Abu Dhabi", "Sharjah", "Other"],
+  },
+  {
+    code: "XX",
+    name: "Other country",
+    regions: ["Other"],
+  },
 ];
 
 export function regionsFor(countryCode: string): string[] {

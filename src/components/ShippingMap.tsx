@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useCallback, useRef } from "react";
+import { useMemo, useState, useCallback, useRef, useEffect } from "react";
 import { geoOrthographic, geoPath, geoGraticule10, geoInterpolate } from "d3-geo";
 import { feature } from "topojson-client";
 import type { Topology, GeometryCollection } from "topojson-specification";
@@ -114,6 +114,52 @@ export default function ShippingMap({
   const showReset =
     Math.abs(rotation[0] - defaultRotation[0]) > 1 || Math.abs(rotation[1] - defaultRotation[1]) > 1;
 
+  // Animate a plane travelling along the full route (origin → waypoint →
+  // destination), looping, so the map feels alive like a live tracking view.
+  const [progress, setProgress] = useState(0);
+  const fullRoute = useMemo(() => {
+    const pts = waypoint ? [origin, waypoint, destination] : [origin, destination];
+    const coords: [number, number][] = [];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const interp = geoInterpolate(
+        [pts[i].lon, pts[i].lat],
+        [pts[i + 1].lon, pts[i + 1].lat]
+      );
+      const steps = 80;
+      for (let s = 0; s <= steps; s++) coords.push(interp(s / steps));
+    }
+    return coords;
+  }, [origin, destination, waypoint]);
+
+  useEffect(() => {
+    let raf: number;
+    let start: number | null = null;
+    const DURATION = 6000; // ms for one full trip
+    function tick(t: number) {
+      if (start === null) start = t;
+      const elapsed = (t - start) % DURATION;
+      setProgress(elapsed / DURATION);
+      raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const planePos = useMemo(() => {
+    if (fullRoute.length === 0) return null;
+    const idx = Math.min(
+      fullRoute.length - 2,
+      Math.floor(progress * (fullRoute.length - 1))
+    );
+    const coord = fullRoute[idx];
+    const next = fullRoute[idx + 1] ?? coord;
+    const p = projection(coord);
+    const pn = projection(next);
+    if (!p || !pn) return null;
+    const angle = (Math.atan2(pn[1] - p[1], pn[0] - p[0]) * 180) / Math.PI;
+    return { x: p[0], y: p[1], angle };
+  }, [fullRoute, progress, projection]);
+
   return (
     <div className="relative rounded-lg border border-ink/10 bg-[#0a1216] overflow-hidden">
       <svg
@@ -199,6 +245,29 @@ export default function ShippingMap({
             </g>
           );
         })}
+        {/* Animated plane travelling the route */}
+        {planePos && (
+          <g
+            transform={`translate(${planePos.x}, ${planePos.y}) rotate(${planePos.angle})`}
+            style={{ pointerEvents: "none" }}
+          >
+            <circle r={7} fill="#ffb000" opacity={0.25}>
+              <animate
+                attributeName="r"
+                values="6;10;6"
+                dur="1.4s"
+                repeatCount="indefinite"
+              />
+            </circle>
+            {/* simple plane shape pointing along travel direction */}
+            <path
+              d="M9 0 L-5 4 L-2 0 L-5 -4 Z"
+              fill="#ffffff"
+              stroke="#14181c"
+              strokeWidth={0.6}
+            />
+          </g>
+        )}
       </svg>
 
       {showReset && (

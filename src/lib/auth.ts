@@ -33,6 +33,17 @@ export async function createSession(payload: SessionPayload) {
 
 export async function destroySession() {
   const store = await cookies();
+  // Overwrite with an immediately-expired cookie using the SAME attributes it
+  // was set with, so the browser reliably removes it (a plain delete() can miss
+  // if path/attributes don't match, leaving the user logged in).
+  store.set(COOKIE_NAME, "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  });
   store.delete(COOKIE_NAME);
 }
 
