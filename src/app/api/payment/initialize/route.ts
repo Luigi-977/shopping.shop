@@ -10,7 +10,7 @@ import {
 } from "@/lib/intasend";
 import { CurrencyCode } from "@/lib/currency";
 
-type LineInput = { slug: string; qty: number };
+type LineInput = { slug: string; qty: number; condition?: string };
 
 export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
@@ -39,7 +39,13 @@ export async function POST(req: NextRequest) {
 
   const items = lines.map((line) => {
     const product = products.find((p) => p.slug === line.slug)!;
-    return { productId: product.id, qty: line.qty, priceAtPurchase: product.price };
+    // If the buyer chose the brand-new version and it has a new price, charge that.
+    const isNew = line.condition === "New";
+    const unitPrice =
+      isNew && typeof product.newPrice === "number" && product.newPrice > 0
+        ? product.newPrice
+        : product.price;
+    return { productId: product.id, qty: line.qty, priceAtPurchase: unitPrice };
   });
   const totalUsd = items.reduce((sum, i) => sum + i.qty * i.priceAtPurchase, 0);
 

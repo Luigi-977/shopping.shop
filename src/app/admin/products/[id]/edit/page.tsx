@@ -41,6 +41,8 @@ export default async function EditProductPage({
         image: product.image,
         inStock: product.inStock,
         stockCount: product.stockCount,
+        newPrice: product.newPrice,
+        newInStock: product.newInStock,
       }}
     />
   );

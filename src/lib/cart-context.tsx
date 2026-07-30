@@ -121,7 +121,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
           email,
           currency,
           delivery,
-          lines: lines.map((l) => ({ slug: l.product.slug, qty: l.qty })),
+          lines: lines.map((l) => ({
+            slug: l.product.slug,
+            qty: l.qty,
+            condition: l.product.condition,
+          })),
         }),
       });
       const data = await res.json();

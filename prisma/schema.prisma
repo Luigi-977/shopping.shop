@@ -27,6 +27,8 @@ model Product {
   condition     String      @default("Refurbished") // "New" | "Refurbished" | "Used"
   price         Int
   originalPrice Int
+  newPrice      Int?
+  newInStock    Boolean     @default(false)
   grade         String // "A" | "B" | "C"
   battery       Int?
   warrantyDays  Int

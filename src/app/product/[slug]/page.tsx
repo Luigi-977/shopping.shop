@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { GRADE_DESC, Grade } from "@/lib/grading";
 import GradeBadge from "@/components/GradeBadge";
 import ProductCard from "@/components/ProductCard";
-import AddToCart from "./AddToCart";
-import PriceBlock from "./PriceBlock";
+import ConditionChooser from "./ConditionChooser";
 import AskAboutItem from "./AskAboutItem";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
@@ -107,8 +106,6 @@ export default async function ProductPage({
             {GRADE_DESC[product.grade as Grade]}
           </p>
 
-          <PriceBlock price={product.price} originalPrice={product.originalPrice} />
-
           {product.inStock &&
             typeof product.stockCount === "number" &&
             product.stockCount > 0 &&
@@ -117,16 +114,8 @@ export default async function ProductPage({
                 🔥 Only {product.stockCount} left in stock
               </p>
             )}
-          {product.inStock ? (
-            <AddToCart product={product} />
-          ) : (
-            <div className="bg-ink/[0.04] border border-ink/10 rounded-md px-5 py-4 text-center">
-              <p className="font-display font-bold text-sm">Sold out</p>
-              <p className="text-xs text-wire mt-1">
-                Waiting for new stock — message us to be notified when it&rsquo;s back.
-              </p>
-            </div>
-          )}
+
+          <ConditionChooser product={product} />
 
           <AskAboutItem productName={product.name} grade={product.grade} />
 

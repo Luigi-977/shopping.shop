@@ -36,6 +36,8 @@ type ProductForm = {
   image: string;
   inStock: boolean;
   stockCount: number | null;
+  newPrice: number | null;
+  newInStock: boolean;
 };
 
 export default function EditProductForm({ product }: { product: ProductForm }) {
@@ -98,6 +100,8 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
         gradeNotes: form.get("gradeNotes"),
         inStock: form.get("inStock") === "on",
         stockCount: form.get("stockCount"),
+        newPrice: form.get("newPrice"),
+        newInStock: form.get("newInStock") === "on",
         imageUrls,
       }),
     });
@@ -265,6 +269,37 @@ export default function EditProductForm({ product }: { product: ProductForm }) {
             placeholder="e.g. 3"
             className={inputClass}
           />
+        </div>
+
+        <div className="border border-circuit/30 bg-circuit/[0.03] rounded-lg p-4 space-y-3">
+          <p className="font-display text-sm font-bold">Brand-new version (optional)</p>
+          <p className="text-xs text-wire">
+            If you also stock this exact model brand-new, set its price here. The
+            product page will show a &ldquo;New vs Refurbished&rdquo; choice.
+          </p>
+          <div>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="newPrice">
+              New price (USD)
+            </label>
+            <input
+              id="newPrice"
+              name="newPrice"
+              type="number"
+              min={0}
+              defaultValue={product.newPrice ?? ""}
+              placeholder="Leave blank if no new version"
+              className={inputClass}
+            />
+          </div>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              name="newInStock"
+              defaultChecked={product.newInStock}
+              className="w-4 h-4"
+            />
+            <span className="text-sm font-medium">New version in stock</span>
+          </label>
         </div>
 
         {error && <p className="text-sm text-rust">{error}</p>}

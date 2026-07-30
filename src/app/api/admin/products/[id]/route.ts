@@ -24,6 +24,11 @@ export async function PATCH(
   if (b.condition !== undefined) data.condition = b.condition;
   if (b.price !== undefined) data.price = Number(b.price);
   if (b.originalPrice !== undefined) data.originalPrice = Number(b.originalPrice);
+  if (b.newPrice !== undefined) {
+    data.newPrice =
+      b.newPrice === "" || b.newPrice === null ? null : Number(b.newPrice);
+  }
+  if (b.newInStock !== undefined) data.newInStock = Boolean(b.newInStock);
   if (b.grade !== undefined) data.grade = b.grade;
   if (b.battery !== undefined) data.battery = b.battery ? Number(b.battery) : null;
   if (b.warrantyDays !== undefined) data.warrantyDays = Number(b.warrantyDays);
