@@ -22,10 +22,27 @@ export default function AdminProductList({
 }) {
   const [query, setQuery] = useState("");
   const [onlyNoPhoto, setOnlyNoPhoto] = useState(false);
+  const [list, setList] = useState(products);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  async function handleDelete(id: string, name: string) {
+    if (!confirm(`Delete "${name}"? This removes it from your shop.`)) return;
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setList((prev) => prev.filter((p) => p.id !== id));
+      } else {
+        alert("Could not delete. Please try again.");
+      }
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return products.filter((p) => {
+    return list.filter((p) => {
       if (onlyNoPhoto && p.hasPhoto) return false;
       if (!q) return true;
       return (
@@ -34,9 +51,9 @@ export default function AdminProductList({
         (p.brand ?? "").toLowerCase().includes(q)
       );
     });
-  }, [products, query, onlyNoPhoto]);
+  }, [list, query, onlyNoPhoto]);
 
-  const withPhoto = products.filter((p) => p.hasPhoto).length;
+  const withPhoto = list.filter((p) => p.hasPhoto).length;
 
   return (
     <div className="max-w-4xl mx-auto px-5 py-10">
@@ -50,7 +67,7 @@ export default function AdminProductList({
         </Link>
       </div>
       <p className="text-wire mb-5">
-        {products.length} products · {withPhoto} with photos
+        {list.length} products · {withPhoto} with photos
       </p>
 
       {/* Search box */}
@@ -77,32 +94,43 @@ export default function AdminProductList({
       ) : (
         <div className="space-y-2">
           {filtered.map((p) => (
-            <Link
+            <div
               key={p.id}
-              href={`/admin/products/${p.id}/edit`}
-              className="flex items-center gap-3 border border-ink/10 rounded-lg p-3 hover:border-ink/30 transition-colors"
+              className="flex items-center gap-3 border border-ink/10 rounded-lg p-3"
             >
-              <div className="w-14 h-14 rounded-md bg-ink/[0.04] flex items-center justify-center text-2xl overflow-hidden shrink-0">
-                {p.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
-                ) : (
-                  p.image
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{p.name}</p>
-                <p className="text-xs text-wire">
-                  {p.category}
-                  {p.brand ? ` · ${p.brand}` : ""} · Grade {p.grade} · ${p.price}
-                </p>
-              </div>
+              <Link
+                href={`/admin/products/${p.id}/edit`}
+                className="flex items-center gap-3 flex-1 min-w-0"
+              >
+                <div className="w-14 h-14 rounded-md bg-ink/[0.04] flex items-center justify-center text-2xl overflow-hidden shrink-0">
+                  {p.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.imageUrl} alt={p.name} className="w-full h-full object-cover" />
+                  ) : (
+                    p.image
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{p.name}</p>
+                  <p className="text-xs text-wire">
+                    {p.category}
+                    {p.brand ? ` · ${p.brand}` : ""} · Grade {p.grade} · ${p.price}
+                  </p>
+                </div>
+              </Link>
               {!p.hasPhoto && (
                 <span className="text-xs font-display text-rust border border-rust/40 rounded px-2 py-0.5 shrink-0">
                   No photo
                 </span>
               )}
-            </Link>
+              <button
+                onClick={() => handleDelete(p.id, p.name)}
+                disabled={deleting === p.id}
+                className="text-xs font-display text-rust border border-rust/30 rounded px-3 py-1.5 hover:bg-rust hover:text-paper transition-colors shrink-0 disabled:opacity-50"
+              >
+                {deleting === p.id ? "…" : "Delete"}
+              </button>
+            </div>
           ))}
         </div>
       )}

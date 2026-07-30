@@ -64,7 +64,19 @@ export async function DELETE(
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
   }
   const { id } = await params;
-  // Soft-delete: hide from shop but keep for order history integrity.
+
+  // If the product has never been ordered, fully delete it (clean removal of
+  // test items). If it appears in past orders, soft-hide instead so order
+  // history stays intact.
+  const orderCount = await prisma.orderItem.count({ where: { productId: id } });
+
+  if (orderCount === 0) {
+    // Remove any reviews first (they cascade, but be explicit), then delete.
+    await prisma.review.deleteMany({ where: { productId: id } });
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ ok: true, deleted: true });
+  }
+
   await prisma.product.update({ where: { id }, data: { inStock: false } });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, deleted: false, hidden: true });
 }
