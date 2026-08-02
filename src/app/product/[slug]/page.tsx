@@ -6,6 +6,7 @@ import GradeBadge from "@/components/GradeBadge";
 import ProductCard from "@/components/ProductCard";
 import ConditionChooser from "./ConditionChooser";
 import AskAboutItem from "./AskAboutItem";
+import ShareButton from "@/components/ShareButton";
 import ImageCarousel from "@/components/ImageCarousel";
 import ReviewSection from "./ReviewSection";
 import DeliveryEstimator from "@/components/DeliveryEstimator";
@@ -117,7 +118,10 @@ export default async function ProductPage({
 
           <ConditionChooser product={product} />
 
-          <AskAboutItem productName={product.name} grade={product.grade} />
+          <div className="flex flex-wrap items-center gap-3">
+            <AskAboutItem productName={product.name} grade={product.grade} />
+            <ShareButton slug={product.slug} name={product.name} />
+          </div>
 
           <DeliveryEstimator />
 
