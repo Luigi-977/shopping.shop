@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import ProductCard from "@/components/ProductCard";
 import PromoCarousel from "@/components/PromoCarousel";
 import CategoryStrip from "@/components/CategoryStrip";
+import LaunchBanner from "@/components/LaunchBanner";
 
 export const revalidate = 60;
 
@@ -19,6 +20,9 @@ export default async function Home() {
 
   return (
     <>
+      {/* Launch week banner */}
+      <LaunchBanner />
+
       {/* Promo carousel */}
       <section className="max-w-6xl mx-auto px-5 pt-6">
         <PromoCarousel />
