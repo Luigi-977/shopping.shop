@@ -41,7 +41,7 @@ export const COUNTRIES: Country[] = [
 // London are the two customer-facing dispatch points.
 export const HUBS = {
   shenzhen: { name: "Shenzhen, China", lat: 22.5431, lon: 114.0579 },
-  nairobi: { name: "Nairobi, Kenya", lat: -1.2864, lon: 36.8172 },
+  nairobi: { name: "Jomo Kenyatta Intl (Nairobi, Kenya)", lat: -1.2864, lon: 36.8172 },
   london: { name: "London, UK", lat: 51.5072, lon: -0.1276 },
 };
 
