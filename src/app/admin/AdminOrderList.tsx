@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Item = { id: string; name: string; image: string; qty: number; lineTotal: number };
+type Item = { id: string; name: string; image: string; imageUrl?: string | null; qty: number; lineTotal: number };
 type Order = {
   id: string;
   email: string;
@@ -151,7 +151,14 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
           <div className="divide-y divide-ink/10 text-sm mb-3">
             {order.items.map((item) => (
               <div key={item.id} className="py-1.5 flex items-center gap-2">
-                <span>{item.image}</span>
+                <span className="w-6 h-6 rounded overflow-hidden flex items-center justify-center shrink-0 bg-ink/[0.04]">
+                  {item.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span>{item.image}</span>
+                  )}
+                </span>
                 <span className="flex-1 truncate">{item.name}</span>
                 <span className="text-wire">×{item.qty}</span>
                 <span className="font-display w-14 text-right">${item.lineTotal}</span>

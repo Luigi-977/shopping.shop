@@ -114,6 +114,9 @@ export default async function AdminPage() {
             id: item.id,
             name: item.product.name,
             image: item.product.image,
+            imageUrl:
+              (item.product.imageUrls && item.product.imageUrls[0]) ||
+              item.product.imageUrl,
             qty: item.qty,
             lineTotal: item.priceAtPurchase * item.qty,
           })),

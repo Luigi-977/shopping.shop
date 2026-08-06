@@ -22,12 +22,19 @@ export async function sendEmail(opts: {
     return;
   }
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from: FROM,
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
     });
+    if (result.error) {
+      console.error(
+        `[email FAILED] to=${opts.to} reason=${result.error.message} — ` +
+          `on Resend's shared test sender, delivery only works to your own Resend signup email. ` +
+          `Verify a domain in Resend to send to real customers.`
+      );
+    }
   } catch (e) {
     console.error("Email send failed:", e);
   }

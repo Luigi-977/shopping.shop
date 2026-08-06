@@ -100,17 +100,29 @@ export default async function AccountPage() {
                 </span>
               </div>
               <div className="divide-y divide-ink/10">
-                {order.items.map((item) => (
-                  <div key={item.id} className="py-2 flex items-center gap-3 text-sm">
-                    <span className="text-2xl">{item.product.image}</span>
-                    <span className="flex-1">{item.product.name}</span>
-                    <GradeBadge grade={item.product.grade as Grade} size="sm" />
-                    <span className="text-wire">×{item.qty}</span>
-                    <span className="font-display w-14 text-right">
-                      ${item.priceAtPurchase * item.qty}
-                    </span>
-                  </div>
-                ))}
+                {order.items.map((item) => {
+                  const photo =
+                    (item.product.imageUrls && item.product.imageUrls[0]) ||
+                    item.product.imageUrl;
+                  return (
+                    <div key={item.id} className="py-2 flex items-center gap-3 text-sm">
+                      <span className="w-8 h-8 rounded overflow-hidden flex items-center justify-center shrink-0 bg-ink/[0.04] text-xl">
+                        {photo ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={photo} alt={item.product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          item.product.image
+                        )}
+                      </span>
+                      <span className="flex-1">{item.product.name}</span>
+                      <GradeBadge grade={item.product.grade as Grade} size="sm" />
+                      <span className="text-wire">×{item.qty}</span>
+                      <span className="font-display w-14 text-right">
+                        ${item.priceAtPurchase * item.qty}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
               <div className="text-right mt-3 font-display font-bold">
                 Total: ${order.total}
