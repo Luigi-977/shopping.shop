@@ -76,7 +76,9 @@ export function estimateDelivery(code: string): DeliveryEstimate | null {
   const country = COUNTRIES.find((c) => c.code === code);
   if (!country) return null;
 
-  const distanceKm = Math.round(haversineKm(HUBS.shenzhen, country));
+  // We ship from our Nairobi (Kenya) stock — this is where real orders
+  // actually dispatch from, not the original supplier location.
+  const distanceKm = Math.round(haversineKm(HUBS.nairobi, country));
 
   // Air-freight model, capped at a maximum of 3-4 working days. Nearby
   // regions (Africa) run faster; farther regions still top out at 4.
@@ -99,8 +101,8 @@ export function estimateDelivery(code: string): DeliveryEstimate | null {
     distanceKm,
     etaDaysLow,
     etaDaysHigh,
-    hub: HUBS.shenzhen,
-    redirectHub: doorstep ? undefined : country.region === "Africa" ? HUBS.nairobi : HUBS.london,
+    hub: HUBS.nairobi,
+    redirectHub: doorstep ? undefined : country.region === "Africa" ? undefined : HUBS.london,
     region: country.region,
   };
 }

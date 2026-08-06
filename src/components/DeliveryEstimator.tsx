@@ -58,7 +58,7 @@ export default function DeliveryEstimator() {
                 <span className="font-semibold">
                   {result.etaDaysLow}–{result.etaDaysHigh} working days
                 </span>{" "}
-                from our {HUBS.shenzhen.name} supply hub — no slow sea shipping. Exact timing depends on{" "}
+                from our {HUBS.nairobi.name} warehouse — no slow sea shipping. Exact timing depends on{" "}
                 {result.country.name} and how early in the day you order: orders placed before 2pm
                 (Nairobi time) on a working day ship the same day.
               </p>
@@ -84,7 +84,7 @@ export default function DeliveryEstimator() {
           )}
 
           <ShippingMap
-            origin={HUBS.shenzhen}
+            origin={HUBS.nairobi}
             destination={result.country}
             waypoint={result.redirectHub}
             etaLabel={`${result.etaDaysLow}–${result.etaDaysHigh} working days`}
