@@ -56,6 +56,52 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
     router.refresh();
   }
 
+  async function markPaid(id: string) {
+    if (
+      !confirm(
+        "Confirm this order was really paid? This marks it paid, reduces stock, and sends the customer their confirmation email — use this only when you've verified the payment yourself."
+      )
+    )
+      return;
+    setBusy(id);
+    await fetch(`/api/admin/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ markPaid: true }),
+    });
+    setOrders((o) => o.map((x) => (x.id === id ? { ...x, status: "paid" } : x)));
+    setBusy(null);
+    router.refresh();
+  }
+
+  async function editDate(id: string, currentIso: string) {
+    // datetime-local wants "YYYY-MM-DDTHH:mm"; build a sensible default.
+    const d = new Date(currentIso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    const defaultVal = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const input = window.prompt(
+      "Enter the correct date & time (YYYY-MM-DDTHH:mm):",
+      defaultVal
+    );
+    if (!input) return;
+    const newDate = new Date(input);
+    if (isNaN(newDate.getTime())) {
+      alert("That date wasn't understood. Please use YYYY-MM-DDTHH:mm, e.g. 2026-08-05T14:30");
+      return;
+    }
+    setBusy(id);
+    await fetch(`/api/admin/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ createdAt: newDate.toISOString() }),
+    });
+    setOrders((o) =>
+      o.map((x) => (x.id === id ? { ...x, createdAt: newDate.toISOString() } : x))
+    );
+    setBusy(null);
+    router.refresh();
+  }
+
   const statusColor: Record<string, string> = {
     paid: "bg-circuit-soft text-circuit",
     pending: "bg-signal/20 text-ink",
@@ -74,7 +120,12 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="min-w-0">
               <p className="font-medium truncate">{order.email}</p>
-              <p className="text-xs text-wire">
+              <button
+                onClick={() => editDate(order.id, order.createdAt)}
+                disabled={busy === order.id}
+                className="text-xs text-wire hover:text-ink hover:underline"
+                title="Tap to edit the order date/time"
+              >
                 {new Date(order.createdAt).toLocaleString(undefined, {
                   month: "short",
                   day: "numeric",
@@ -83,7 +134,7 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
                 })}
                 {" · "}
                 {order.items.length} item{order.items.length > 1 ? "s" : ""}
-              </p>
+              </button>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span
@@ -126,6 +177,15 @@ export default function AdminOrderList({ orders: initial }: { orders: Order[] })
           )}
 
           <div className="flex flex-wrap gap-2">
+            {order.status === "pending" && (
+              <button
+                onClick={() => markPaid(order.id)}
+                disabled={busy === order.id}
+                className="text-xs font-display px-3 py-1.5 rounded-md bg-circuit text-paper hover:brightness-95 disabled:opacity-50"
+              >
+                ✓ Mark as paid
+              </button>
+            )}
             {order.status === "paid" && (
               <button
                 onClick={() => markShipped(order.id)}
